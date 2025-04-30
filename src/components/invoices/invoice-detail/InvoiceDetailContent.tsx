@@ -23,14 +23,19 @@ export function InvoiceDetailContent({ invoice, onConfigurePayment }: InvoiceDet
   
   // Mock contractor data based on the invoice's contractor information
   const mockContractor: Contractor = {
-    id: invoice.id, // Use invoice id instead of contractorId which doesn't exist
-    company: invoice.contractorName || 'Unknown Contractor',
-    address: invoice.contractorDetails?.split('\n')[0] || 'No address available',
-    phone: invoice.contractorDetails?.split('\n')[1] || 'No phone available',
-    type: 'General',
-    isPreferred: false
-  };
-  
+      id: '1',
+      company: 'Ace Plumbing',
+      address: '11 Miami Avenue, Fredericktown',
+      email: 'info@aceplumbing.com',
+      phone: '(951) 394-0252',
+      type: 'Plumbing',
+      insuranceExpiration: '2024-12-15',
+      workersCompExpiration: '2024-11-30',
+      taxpayerId: '53-8796421',
+      paymentTerms: 'Net 30',
+      isPreferred: true
+    };
+  console.log(mockContractor.company)
   const handleOpenContractorModal = () => {
     setShowContractorModal(true);
   };
