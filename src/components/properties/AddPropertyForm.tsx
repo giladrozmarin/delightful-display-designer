@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -111,7 +112,6 @@ export function AddPropertyForm({ onClose }: AddPropertyFormProps) {
   const unitForm = useForm<z.infer<typeof unitSchema>>({
     resolver: zodResolver(unitSchema),
     defaultValues: formData.units || {
-      // Initialize with one unit by default
       units: [{ name: "", beds: "", baths: "", size: "", marketRent: "" }],
     },
   });
@@ -145,37 +145,12 @@ export function AddPropertyForm({ onClose }: AddPropertyFormProps) {
     },
   });
 
-  // Function to check if property type is single family
-  const isSingleFamily = () => {
-    return typeForm.watch("subType") === "single_family";
-  };
-
-  // Setup the first unit with appropriate name for single family
-  useEffect(() => {
-    if (isSingleFamily() && unitForm.getValues().units.length > 0) {
-      const currentUnits = unitForm.getValues().units;
-      if (currentUnits.length === 1 && !currentUnits[0].name) {
-        unitForm.setValue("units.0.name", "Main Unit");
-      }
-    }
-  }, [typeForm.watch("subType")]);
-
   const addUnit = () => {
-    // Do not allow adding more units for single family homes
-    if (isSingleFamily()) {
-      return;
-    }
-    
     const currentUnits = unitForm.getValues().units || [];
     unitForm.setValue("units", [...currentUnits, { name: "", beds: "", baths: "", size: "", marketRent: "" }]);
   };
 
   const removeUnit = (index: number) => {
-    // Do not allow removing the only unit for single family homes
-    if (isSingleFamily() && unitForm.getValues().units.length <= 1) {
-      return;
-    }
-    
     const currentUnits = unitForm.getValues().units || [];
     if (currentUnits.length > 1) {
       unitForm.setValue("units", currentUnits.filter((_, i) => i !== index));
@@ -401,7 +376,9 @@ export function AddPropertyForm({ onClose }: AddPropertyFormProps) {
 
                 <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200 mt-4">
                   <p className="text-sm text-yellow-800">
-                    <span className="font-semibold">Tip:</span> For single family homes, the system will automatically create one unit to represent the entire property.
+                    <span className="font-semibold">Tip:</span> If you manage a mixed-type property with both residential and commercial units, 
+                    it is recommended to create separate, identical properties (one commercial and one residential) 
+                    and divide the units between them.
                   </p>
                 </div>
               </div>
@@ -525,16 +502,14 @@ export function AddPropertyForm({ onClose }: AddPropertyFormProps) {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="text-base font-semibold">Units</h3>
-                  {!isSingleFamily() && (
-                    <Button 
-                      type="button" 
-                      variant="outline" 
-                      onClick={addUnit}
-                      className="flex items-center gap-2"
-                    >
-                      <Plus className="h-4 w-4" /> Add Another Unit
-                    </Button>
-                  )}
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={addUnit}
+                    className="flex items-center gap-2"
+                  >
+                    <Plus className="h-4 w-4" /> Add Another Unit
+                  </Button>
                 </div>
                 
                 <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 mb-4">
@@ -545,9 +520,8 @@ export function AddPropertyForm({ onClose }: AddPropertyFormProps) {
                     <div>
                       <p className="text-sm text-blue-800 font-medium">What are Units?</p>
                       <p className="text-sm text-blue-800">
-                        Units are leasable spaces within your property. {isSingleFamily() ? 
-                        "For single family homes, the entire home is treated as one unit." : 
-                        "For multi-unit properties, you can add multiple units like apartments or rooms."}
+                        Units are leasable spaces within your property, such as homes, rooms, or apartments.
+                        Adding at least one unit is required because leases are associated with units.
                       </p>
                     </div>
                   </div>
@@ -557,10 +531,8 @@ export function AddPropertyForm({ onClose }: AddPropertyFormProps) {
                   <Card key={index} className="border border-gray-200">
                     <CardContent className="pt-6">
                       <div className="flex justify-between items-center mb-4">
-                        <h4 className="font-medium">
-                          {isSingleFamily() ? "Property Details" : `Unit ${index + 1}`}
-                        </h4>
-                        {!isSingleFamily() && unitForm.watch("units").length > 1 && (
+                        <h4 className="font-medium">Unit {index + 1}</h4>
+                        {unitForm.watch("units").length > 1 && (
                           <Button 
                             type="button" 
                             variant="ghost" 
@@ -579,16 +551,9 @@ export function AddPropertyForm({ onClose }: AddPropertyFormProps) {
                           name={`units.${index}.name`}
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>
-                                {isSingleFamily() ? "Unit Identifier" : "Unit Name"} 
-                                <span className="text-red-500">*</span>
-                              </FormLabel>
+                              <FormLabel>Unit Name <span className="text-red-500">*</span></FormLabel>
                               <FormControl>
-                                <Input 
-                                  placeholder={isSingleFamily() ? "Main Unit" : "e.g., Apt 101, Suite A"} 
-                                  {...field}
-                                  disabled={isSingleFamily()}
-                                />
+                                <Input placeholder="e.g., Apt 101, Suite A" {...field} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>

@@ -1,25 +1,21 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Banknote, CreditCard } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-
 interface BankAccountSetupDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSuccess?: (accountId: string) => void;
 }
-
 export function BankAccountSetupDialog({
   open,
-  onOpenChange,
-  onSuccess
+  onOpenChange
 }: BankAccountSetupDialogProps) {
   const [connecting, setConnecting] = useState(false);
-  const { toast } = useToast();
-
+  const {
+    toast
+  } = useToast();
   const handleConnectPlaid = () => {
     setConnecting(true);
 
@@ -31,16 +27,9 @@ export function BankAccountSetupDialog({
         title: "Bank account connected",
         description: "Your bank account has been successfully linked via Plaid"
       });
-      
-      // Call onSuccess with a mock account ID
-      if (onSuccess) {
-        onSuccess("acct_12345");
-      }
-      
       onOpenChange(false);
     }, 2000);
   };
-  
   const handleManualEntry = () => {
     toast({
       title: "Manual entry selected",
@@ -48,11 +37,8 @@ export function BankAccountSetupDialog({
     });
 
     // Here you would navigate to a manual entry form or open another dialog
-    onOpenChange(false);
   };
-  
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+  return <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[550px]">
         <DialogHeader>
           <DialogTitle>Connect a Bank Account</DialogTitle>
@@ -115,6 +101,5 @@ export function BankAccountSetupDialog({
           Secured by Plaid.
         </div>
       </DialogContent>
-    </Dialog>
-  );
+    </Dialog>;
 }

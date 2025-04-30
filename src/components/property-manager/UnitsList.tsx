@@ -9,7 +9,7 @@ import {
   TableRow 
 } from "@/components/ui/table";
 import { Button } from '@/components/ui/button';
-import { Edit, Trash2, Eye, Home } from 'lucide-react';
+import { Edit, Trash2, Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 interface Unit {
@@ -24,27 +24,14 @@ interface Unit {
   rent: number;
 }
 
-interface Property {
-  type?: string;
-  // Property can now have unit data directly
-  rooms?: number;
-  size?: string;
-  bathrooms?: number;
-  status?: string;
-  available?: boolean;
-  rent?: number;
-}
-
 interface UnitsListProps {
   units: Unit[];
   showActions?: boolean;
   propertyId?: number;
-  property?: Property; // Add property information
 }
 
-export function UnitsList({ units, showActions = false, propertyId, property }: UnitsListProps) {
+export function UnitsList({ units, showActions = false, propertyId }: UnitsListProps) {
   const navigate = useNavigate();
-  const isSingleFamilyHome = property?.type === "Single Family Home";
 
   const handleViewUnit = (unitId: number) => {
     if (propertyId) {
@@ -52,36 +39,8 @@ export function UnitsList({ units, showActions = false, propertyId, property }: 
     }
   };
 
-  // If single family home and no units, display property data as a single unit
-  const displayUnits = units.length > 0 ? units : (
-    isSingleFamilyHome && property ? [
-      {
-        id: 0,
-        number: "Main Unit",
-        rooms: property.rooms || 0,
-        size: property.size || "N/A",
-        bathrooms: property.bathrooms || 0,
-        status: property.status || "Vacant",
-        available: property.available !== undefined ? property.available : true,
-        address: "",
-        rent: property.rent || 0
-      }
-    ] : []
-  );
-
   return (
     <div className="overflow-x-auto">
-      {isSingleFamilyHome && (
-        <div className="mb-4 p-3 bg-blue-50 rounded-md border border-blue-100">
-          <div className="flex items-center gap-2">
-            <Home className="h-4 w-4 text-blue-600" />
-            <p className="text-blue-800 text-sm">
-              Single Family Home: Property unit data is managed at the property level.
-            </p>
-          </div>
-        </div>
-      )}
-      
       <Table>
         <TableHeader>
           <TableRow>
@@ -96,7 +55,7 @@ export function UnitsList({ units, showActions = false, propertyId, property }: 
           </TableRow>
         </TableHeader>
         <TableBody>
-          {displayUnits.map((unit) => (
+          {units.map((unit) => (
             <TableRow 
               key={unit.id} 
               className="cursor-pointer hover:bg-gray-50"
@@ -150,11 +109,9 @@ export function UnitsList({ units, showActions = false, propertyId, property }: 
                     <Button variant="outline" size="sm" className="h-8 w-8 p-0">
                       <Edit className="h-4 w-4" />
                     </Button>
-                    {!isSingleFamilyHome && (
-                      <Button variant="outline" size="sm" className="h-8 w-8 p-0 text-red-500 hover:text-red-500">
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    )}
+                    <Button variant="outline" size="sm" className="h-8 w-8 p-0 text-red-500 hover:text-red-500">
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
                 </TableCell>
               )}
@@ -162,12 +119,6 @@ export function UnitsList({ units, showActions = false, propertyId, property }: 
           ))}
         </TableBody>
       </Table>
-      
-      {displayUnits.length === 0 && (
-        <div className="text-center py-8 border rounded-md">
-          <p className="text-gray-500">No units available.</p>
-        </div>
-      )}
     </div>
   );
 }

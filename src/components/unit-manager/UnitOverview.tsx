@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 
@@ -19,14 +18,7 @@ interface Property {
   id: number;
   name: string;
   address: string;
-  type?: string;
-  // Property can now contain unit data directly
-  rooms?: number;
-  size?: string;
-  bathrooms?: number;
-  status?: string;
-  available?: boolean;
-  rent?: number;
+  // Other property fields
 }
 
 interface UnitOverviewProps {
@@ -35,17 +27,6 @@ interface UnitOverviewProps {
 }
 
 export function UnitOverview({ unit, property }: UnitOverviewProps) {
-  // If this is a single family home, the unit data is at property level
-  const isSingleFamilyHome = property.type === "Single Family Home";
-  const displayData = isSingleFamilyHome ? {
-    rooms: property.rooms || unit.rooms,
-    size: property.size || unit.size,
-    bathrooms: property.bathrooms || unit.bathrooms,
-    status: property.status || unit.status,
-    available: property.available !== undefined ? property.available : unit.available,
-    rent: property.rent || unit.rent
-  } : unit;
-  
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -55,35 +36,35 @@ export function UnitOverview({ unit, property }: UnitOverviewProps) {
             <div className="space-y-3">
               <div className="flex justify-between">
                 <span className="text-gray-500">Unit Number:</span>
-                <span className="font-medium">{isSingleFamilyHome ? "Main Unit" : unit.number}</span>
+                <span className="font-medium">{unit.number}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500">Size:</span>
-                <span className="font-medium">{displayData.size}</span>
+                <span className="font-medium">{unit.size}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500">Bedrooms:</span>
-                <span className="font-medium">{displayData.rooms}</span>
+                <span className="font-medium">{unit.rooms}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500">Bathrooms:</span>
-                <span className="font-medium">{displayData.bathrooms}</span>
+                <span className="font-medium">{unit.bathrooms}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500">Status:</span>
-                <span className="font-medium">{displayData.status}</span>
+                <span className="font-medium">{unit.status}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500">Available for Rent:</span>
-                <span className="font-medium">{displayData.available ? 'Yes' : 'No'}</span>
+                <span className="font-medium">{unit.available ? 'Yes' : 'No'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500">Monthly Rent:</span>
-                <span className="font-medium">${displayData.rent}</span>
+                <span className="font-medium">${unit.rent}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500">Address:</span>
-                <span className="font-medium">{isSingleFamilyHome ? property.address : unit.address}</span>
+                <span className="font-medium">{unit.address}</span>
               </div>
             </div>
           </CardContent>
@@ -101,12 +82,6 @@ export function UnitOverview({ unit, property }: UnitOverviewProps) {
                 <span className="text-gray-500">Property Address:</span>
                 <span className="font-medium">{property.address}</span>
               </div>
-              {property.type && (
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Property Type:</span>
-                  <span className="font-medium">{property.type}</span>
-                </div>
-              )}
             </div>
           </CardContent>
         </Card>
@@ -119,11 +94,11 @@ export function UnitOverview({ unit, property }: UnitOverviewProps) {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-green-50 p-4 rounded-lg">
               <p className="text-sm text-green-600 mb-1">Monthly Rent</p>
-              <p className="text-xl font-bold text-green-700">${displayData.rent}</p>
+              <p className="text-xl font-bold text-green-700">${unit.rent}</p>
             </div>
             <div className="bg-blue-50 p-4 rounded-lg">
               <p className="text-sm text-blue-600 mb-1">Annual Revenue</p>
-              <p className="text-xl font-bold text-blue-700">${displayData.rent * 12}</p>
+              <p className="text-xl font-bold text-blue-700">${unit.rent * 12}</p>
             </div>
             <div className="bg-purple-50 p-4 rounded-lg">
               <p className="text-sm text-purple-600 mb-1">Security Deposit</p>
