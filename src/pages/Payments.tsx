@@ -4,11 +4,13 @@ import { AppSidebar } from '@/components/AppSidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CreditCard, Plus, Filter, ArrowRight } from 'lucide-react';
+import { CreditCard, Plus, Filter, ArrowRight, Banknote } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { BankAccountSetupDialog } from '@/components/payment/BankAccountSetupDialog';
 
 export default function Payments() {
   const navigate = useNavigate();
+  const [bankSetupOpen, setBankSetupOpen] = useState(false);
   
   const handleSetupPayments = () => {
     navigate('/payment-setup');
@@ -26,6 +28,10 @@ export default function Payments() {
                 <p className="text-gray-500">Manage tenant payments and transactions</p>
               </div>
               <div className="flex space-x-3">
+                <Button variant="outline" className="gap-2" onClick={() => setBankSetupOpen(true)}>
+                  <Banknote className="h-4 w-4" />
+                  Setup Bank Account
+                </Button>
                 <Button variant="outline" className="gap-2">
                   <Filter className="h-4 w-4" />
                   Filter
@@ -76,6 +82,11 @@ export default function Payments() {
           </div>
         </main>
       </div>
+      
+      <BankAccountSetupDialog 
+        open={bankSetupOpen}
+        onOpenChange={setBankSetupOpen}
+      />
     </SidebarProvider>
   );
 }
