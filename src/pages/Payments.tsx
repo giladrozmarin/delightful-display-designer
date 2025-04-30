@@ -11,9 +11,15 @@ import { BankAccountSetupDialog } from '@/components/payment/BankAccountSetupDia
 export default function Payments() {
   const navigate = useNavigate();
   const [bankSetupOpen, setBankSetupOpen] = useState(false);
+  const [accountConnected, setAccountConnected] = useState(false);
   
   const handleSetupPayments = () => {
     navigate('/payment-setup');
+  };
+  
+  const handleBankAccountSuccess = (accountId: string) => {
+    console.log("Bank account connected with ID:", accountId);
+    setAccountConnected(true);
   };
   
   return (
@@ -30,7 +36,7 @@ export default function Payments() {
               <div className="flex space-x-3">
                 <Button variant="outline" className="gap-2" onClick={() => setBankSetupOpen(true)}>
                   <Banknote className="h-4 w-4" />
-                  Setup Bank Account
+                  {accountConnected ? "Update Bank Account" : "Setup Bank Account"}
                 </Button>
                 <Button variant="outline" className="gap-2">
                   <Filter className="h-4 w-4" />
@@ -43,24 +49,26 @@ export default function Payments() {
               </div>
             </div>
             
-            <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-100">
-              <CardContent className="p-6">
-                <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-                  <div className="text-center md:text-left">
-                    <h2 className="text-xl font-semibold text-blue-800 mb-2">Set Up Payment Processing</h2>
-                    <p className="text-blue-700 max-w-md">
-                      Connect your bank account to start accepting online payments from tenants
-                    </p>
+            {!accountConnected && (
+              <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-100">
+                <CardContent className="p-6">
+                  <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div className="text-center md:text-left">
+                      <h2 className="text-xl font-semibold text-blue-800 mb-2">Set Up Payment Processing</h2>
+                      <p className="text-blue-700 max-w-md">
+                        Connect your bank account to start accepting online payments from tenants
+                      </p>
+                    </div>
+                    <Button 
+                      className="bg-blue-800 hover:bg-blue-900 gap-2 whitespace-nowrap"
+                      onClick={handleSetupPayments}
+                    >
+                      Setup Payments <ArrowRight className="h-4 w-4" />
+                    </Button>
                   </div>
-                  <Button 
-                    className="bg-blue-800 hover:bg-blue-900 gap-2 whitespace-nowrap"
-                    onClick={handleSetupPayments}
-                  >
-                    Setup Payments <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            )}
             
             <Card>
               <CardHeader className="border-b">
@@ -86,6 +94,7 @@ export default function Payments() {
       <BankAccountSetupDialog 
         open={bankSetupOpen}
         onOpenChange={setBankSetupOpen}
+        onSuccess={handleBankAccountSuccess}
       />
     </SidebarProvider>
   );
