@@ -113,6 +113,7 @@ export default function Auth() {
                       type="text"
                       placeholder="John Doe"
                       className="pl-10"
+                      autoComplete="name"
                     />
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                   </div>
@@ -127,6 +128,7 @@ export default function Auth() {
                     type="email"
                     placeholder="name@example.com"
                     className="pl-10"
+                    autoComplete="email"
                   />
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                 </div>
@@ -140,6 +142,7 @@ export default function Auth() {
                     type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
                     className="pl-10"
+                    autoComplete={isLogin ? "current-password" : "new-password"}
                   />
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                   <button
