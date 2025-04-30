@@ -1,54 +1,44 @@
-
 import React, { useState } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Banknote, CreditCard } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-
 interface BankAccountSetupDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
-
-export function BankAccountSetupDialog({ open, onOpenChange }: BankAccountSetupDialogProps) {
+export function BankAccountSetupDialog({
+  open,
+  onOpenChange
+}: BankAccountSetupDialogProps) {
   const [connecting, setConnecting] = useState(false);
-  const { toast } = useToast();
-  
+  const {
+    toast
+  } = useToast();
   const handleConnectPlaid = () => {
     setConnecting(true);
-    
+
     // This is where we would normally integrate with Plaid Link
     // For demonstration purposes, we're simulating a successful connection
     setTimeout(() => {
       setConnecting(false);
-      
       toast({
         title: "Bank account connected",
-        description: "Your bank account has been successfully linked via Plaid",
+        description: "Your bank account has been successfully linked via Plaid"
       });
-      
       onOpenChange(false);
     }, 2000);
   };
-  
   const handleManualEntry = () => {
     toast({
       title: "Manual entry selected",
-      description: "You can now enter your bank details manually",
+      description: "You can now enter your bank details manually"
     });
-    
+
     // Here you would navigate to a manual entry form or open another dialog
   };
-  
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+  return <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[550px]">
         <DialogHeader>
           <DialogTitle>Connect a Bank Account</DialogTitle>
@@ -72,7 +62,7 @@ export function BankAccountSetupDialog({ open, onOpenChange }: BankAccountSetupD
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
           <Card className="p-6 border-2 border-blue-100 relative overflow-hidden">
-            <div className="absolute top-0 left-0 px-2 py-1 bg-orange-500 text-white text-xs font-medium">
+            <div className="absolute top-0 left-0 px-2 py-1 text-white text-xs font-medium bg-blue-500">
               RECOMMENDED
             </div>
             
@@ -84,11 +74,7 @@ export function BankAccountSetupDialog({ open, onOpenChange }: BankAccountSetupD
               <p className="text-center text-gray-600 text-sm">
                 Securely connect your online account in seconds with Plaid
               </p>
-              <Button 
-                className="w-full bg-blue-800 hover:bg-blue-900 text-white"
-                onClick={handleConnectPlaid}
-                disabled={connecting}
-              >
+              <Button className="w-full bg-blue-800 hover:bg-blue-900 text-white" onClick={handleConnectPlaid} disabled={connecting}>
                 {connecting ? "CONNECTING..." : "ADD VIA LOGIN"}
               </Button>
             </div>
@@ -103,11 +89,7 @@ export function BankAccountSetupDialog({ open, onOpenChange }: BankAccountSetupD
               <p className="text-center text-gray-600 text-sm">
                 Add your account and routing numbers in minutes
               </p>
-              <Button 
-                variant="outline"
-                className="w-full border-blue-800 text-blue-800 hover:bg-blue-50"
-                onClick={handleManualEntry}
-              >
+              <Button variant="outline" className="w-full border-blue-800 text-blue-800 hover:bg-blue-50" onClick={handleManualEntry}>
                 ENTER MANUALLY
               </Button>
             </div>
@@ -119,6 +101,5 @@ export function BankAccountSetupDialog({ open, onOpenChange }: BankAccountSetupD
           Secured by Plaid.
         </div>
       </DialogContent>
-    </Dialog>
-  );
+    </Dialog>;
 }
