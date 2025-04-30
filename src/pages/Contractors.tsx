@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/AppSidebar';
@@ -192,8 +193,8 @@ export default function Contractors() {
     <SidebarProvider>
       <div className="flex h-screen bg-gray-50">
         <AppSidebar />
-        <main className="flex-1 p-8 overflow-auto">
-          <div className="max-w-7xl mx-auto">
+        <main className="flex-1 overflow-auto">
+          <div className="p-8 max-w-full mx-auto">
             <div className="mb-8">
               <h1 className="text-3xl font-bold text-gray-900 mb-2">Contractors</h1>
               <p className="text-gray-600">Manage all service providers and vendors</p>
