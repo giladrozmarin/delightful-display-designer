@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { FileText, FilePlus } from 'lucide-react';
+import { FileText, FilePlus, UserPlus } from 'lucide-react';
 import { UnitStatusDisplay } from './UnitStatusDisplay';
 interface UnitHeaderProps {
   address: string;
@@ -10,6 +11,7 @@ interface UnitHeaderProps {
   onEditUnit: () => void;
   onNavigateToNewLease: () => void;
   onNavigateToNewApplication: () => void;
+  onInviteRenter: () => void;
 }
 export function UnitHeader({
   address,
@@ -18,7 +20,8 @@ export function UnitHeader({
   available,
   onEditUnit,
   onNavigateToNewLease,
-  onNavigateToNewApplication
+  onNavigateToNewApplication,
+  onInviteRenter
 }: UnitHeaderProps) {
   return <div className="flex flex-col md:flex-row md:items-center justify-between">
       <div>
@@ -38,7 +41,10 @@ export function UnitHeader({
           <FileText className="h-4 w-4 mr-2" />
           New Lease
         </Button>
-        
+        <Button className="bg-green-600 hover:bg-green-700" onClick={onInviteRenter}>
+          <UserPlus className="h-4 w-4 mr-2" />
+          Invite Renter To Apply
+        </Button>
       </div>
     </div>;
 }

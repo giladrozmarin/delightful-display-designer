@@ -17,6 +17,7 @@ import { UnitStatCards } from '@/components/unit-manager/UnitStatCards';
 import { toast } from "@/components/ui/use-toast";
 import { ApplicationTemplateSelector } from '@/components/unit-manager/ApplicationTemplateSelector';
 import { applicationTemplates } from '@/components/application-settings/types';
+import { InviteRenterDialog } from '@/components/payment/InviteRenterDialog';
 
 const propertiesData = [
   {
@@ -149,6 +150,7 @@ export default function UnitDetails() {
   const [activeTab, setActiveTab] = useState("overview");
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(null);
+  const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
   
   const property = propertiesData.find(p => p.id === Number(propertyId));
   const unit = property?.units.find(u => u.id === Number(unitId));
@@ -273,6 +275,10 @@ export default function UnitDetails() {
     ? applicationTemplates.find(t => t.id === selectedTemplateId)
     : null;
 
+  const handleInviteRenter = () => {
+    setInviteDialogOpen(true);
+  };
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-[#f2f3f7]">
@@ -297,6 +303,7 @@ export default function UnitDetails() {
                 onEditUnit={() => setEditDialogOpen(true)}
                 onNavigateToNewLease={() => navigate('/leases/new')}
                 onNavigateToNewApplication={() => navigate('/newApplications')}
+                onInviteRenter={handleInviteRenter}
               />
             </div>
             
@@ -471,6 +478,13 @@ export default function UnitDetails() {
         onOpenChange={setEditDialogOpen} 
         unit={unit}
         property={property}
+      />
+      
+      <InviteRenterDialog
+        open={inviteDialogOpen}
+        onOpenChange={setInviteDialogOpen}
+        property={property}
+        unit={unit}
       />
     </SidebarProvider>
   );
