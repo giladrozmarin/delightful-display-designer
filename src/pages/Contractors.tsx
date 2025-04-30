@@ -191,10 +191,10 @@ export default function Contractors() {
 
   return (
     <SidebarProvider>
-      <div className="flex h-screen bg-gray-50">
+      <div className="flex w-full h-screen overflow-hidden bg-gray-50">
         <AppSidebar />
         <main className="flex-1 overflow-auto">
-          <div className="p-8 max-w-full mx-auto">
+          <div className="p-8">
             <div className="mb-8">
               <h1 className="text-3xl font-bold text-gray-900 mb-2">Contractors</h1>
               <p className="text-gray-600">Manage all service providers and vendors</p>
