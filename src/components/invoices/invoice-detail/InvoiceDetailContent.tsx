@@ -8,7 +8,8 @@ import { Invoice } from '@/pages/Invoices';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Contractor } from '@/pages/Contractors';
 import { ContractorDetails } from '@/components/contractors/ContractorDetails';
-import { useNavigate } from 'react-router-dom';
+import { ContractorForm } from '@/components/contractors/ContractorForm';
+import { useToast } from '@/hooks/use-toast';
 
 interface InvoiceDetailContentProps {
   invoice: Invoice;
@@ -17,7 +18,8 @@ interface InvoiceDetailContentProps {
 
 export function InvoiceDetailContent({ invoice, onConfigurePayment }: InvoiceDetailContentProps) {
   const [showContractorModal, setShowContractorModal] = useState(false);
-  const navigate = useNavigate();
+  const [showEditContractorModal, setShowEditContractorModal] = useState(false);
+  const { toast } = useToast();
   
   // Mock contractor data based on the invoice's contractor information
   const mockContractor: Contractor = {
@@ -34,10 +36,19 @@ export function InvoiceDetailContent({ invoice, onConfigurePayment }: InvoiceDet
   };
   
   const handleEditContractor = () => {
-    // Close the modal and navigate to the contractors page
+    // Close the view modal and open the edit modal
     setShowContractorModal(false);
-    // Navigate to contractors page
-    navigate('/contractors');
+    setShowEditContractorModal(true);
+  };
+
+  const handleSaveContractor = (contractor: Contractor) => {
+    // Here you would typically update the contractor in the database
+    // For now, we'll just show a toast message
+    toast({
+      title: "Contractor Updated",
+      description: `${contractor.company} has been successfully updated.`,
+    });
+    setShowEditContractorModal(false);
   };
 
   return (
@@ -151,12 +162,23 @@ export function InvoiceDetailContent({ invoice, onConfigurePayment }: InvoiceDet
         </ResizablePanel>
       </ResizablePanelGroup>
       
-      {/* Contractor Modal */}
+      {/* Contractor Details Modal */}
       <Dialog open={showContractorModal} onOpenChange={setShowContractorModal}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <ContractorDetails 
             contractor={mockContractor} 
             onEdit={handleEditContractor}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Contractor Edit Modal */}
+      <Dialog open={showEditContractorModal} onOpenChange={setShowEditContractorModal}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <ContractorForm 
+            contractor={mockContractor}
+            onSave={handleSaveContractor}
+            onCancel={() => setShowEditContractorModal(false)}
           />
         </DialogContent>
       </Dialog>
