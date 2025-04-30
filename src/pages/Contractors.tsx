@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/AppSidebar';
@@ -22,7 +21,7 @@ import {
 } from '@/components/ui/table';
 import { toast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
-import { Dialog, DialogContent, DialogTitle, DialogHeader, DialogFooter, DialogTrigger, DialogDescription, DialogClose } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTrigger, DialogDescription, DialogClose } from '@/components/ui/dialog';
 import { ContractorForm } from '@/components/contractors/ContractorForm';
 import { ContractorDetails } from '@/components/contractors/ContractorDetails';
 
@@ -46,6 +45,9 @@ export interface Contractor {
   billingCode?: string;
   notes?: string;
   isPreferred?: boolean;
+  // New Banking Information
+  routingNumber?: string;
+  accountNumber?: string;
 }
 
 // Mock data for contractors

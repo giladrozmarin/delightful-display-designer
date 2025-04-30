@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
@@ -21,8 +22,9 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { Contractor, ContractorType } from '@/pages/Contractors';
 import { DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Check } from 'lucide-react';
+import { Check, CreditCard, Banknote } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface ContractorFormProps {
   contractor: Contractor | null;
@@ -67,7 +69,9 @@ export function ContractorForm({ contractor, onSave, onCancel }: ContractorFormP
       paymentTerms: 'Net 30',
       billingCode: '',
       notes: '',
-      isPreferred: false
+      isPreferred: false,
+      routingNumber: '',
+      accountNumber: ''
     }
   });
 
@@ -76,6 +80,38 @@ export function ContractorForm({ contractor, onSave, onCancel }: ContractorFormP
       ...data,
       id: contractor?.id || '' // ID will be generated on the backend for new contractors
     });
+  };
+
+  const validateRoutingNumber = (value: string) => {
+    if (!value) return true; // Allow empty
+    
+    // Check if exactly 9 digits
+    if (!/^\d{9}$/.test(value)) {
+      return "Routing number must be exactly 9 digits";
+    }
+    
+    // Apply NACHA validation algorithm
+    const weights = [3, 7, 1, 3, 7, 1, 3, 7, 1];
+    const total = value.split('').reduce((sum, digit, index) => {
+      return sum + parseInt(digit) * weights[index];
+    }, 0);
+    
+    if (total % 10 !== 0) {
+      return "Invalid routing number (checksum failed)";
+    }
+    
+    return true;
+  };
+
+  const validateAccountNumber = (value: string) => {
+    if (!value) return true; // Allow empty
+    
+    // Check if 4-17 digits only
+    if (!/^\d{4,17}$/.test(value)) {
+      return "Account number must be 4 to 17 digits";
+    }
+    
+    return true;
   };
 
   return (
@@ -285,6 +321,68 @@ export function ContractorForm({ contractor, onSave, onCancel }: ContractorFormP
                   </FormItem>
                 )}
               />
+            </div>
+            
+            {/* Banking Information Section - NEW */}
+            <div className="space-y-4 md:col-span-2">
+              <Collapsible className="border rounded-md p-4">
+                <CollapsibleTrigger className="flex items-center justify-between w-full">
+                  <h3 className="text-lg font-medium">Banking Information</h3>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="pt-4 space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="routingNumber"
+                    rules={{ validate: validateRoutingNumber }}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Routing Number (ABA/RTN)</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Banknote className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                            <Input 
+                              placeholder="9-digit routing number" 
+                              {...field} 
+                              className="pl-10"
+                              maxLength={9}
+                            />
+                          </div>
+                        </FormControl>
+                        <FormDescription>
+                          Enter exactly 9 digits (0-9)
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="accountNumber"
+                    rules={{ validate: validateAccountNumber }}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Account Number</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                            <Input 
+                              placeholder="Account number" 
+                              {...field} 
+                              className="pl-10"
+                              maxLength={17}
+                            />
+                          </div>
+                        </FormControl>
+                        <FormDescription>
+                          Enter 4-17 digits (NACHA recommends digits only)
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CollapsibleContent>
+              </Collapsible>
             </div>
             
             {/* Contractor Type Section */}
