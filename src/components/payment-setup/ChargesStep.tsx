@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Calendar, Edit } from 'lucide-react';
+import { Calendar, Edit, Plus, Trash2 } from 'lucide-react';
 import { ChargeItem } from './PaymentSetupWizard';
 import { v4 as uuidv4 } from 'uuid';
 import { Separator } from '@/components/ui/separator';
@@ -16,6 +16,11 @@ import {
 import { format } from 'date-fns';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
+import { 
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 
 const categoryOptions = [
   { value: 'rent', label: 'Rent' },
@@ -73,71 +78,444 @@ interface ChargesStepProps {
   onSave: (monthlyCharges: ChargeItem[], oneTimeCharges: ChargeItem[]) => void;
 }
 
-export function ChargesStep({ monthlyCharges, oneTimeCharges, onSave }: ChargesStepProps) {
-  const [editingMonthly, setEditingMonthly] = useState<ChargeItem>({
-    id: monthlyCharges.length > 0 ? monthlyCharges[0].id : uuidv4(),
-    category: monthlyCharges.length > 0 ? monthlyCharges[0].category : 'rent',
-    amount: monthlyCharges.length > 0 ? monthlyCharges[0].amount : '',
-    description: monthlyCharges.length > 0 ? monthlyCharges[0].description : '',
-    dueDay: monthlyCharges.length > 0 ? monthlyCharges[0].dueDay : '1',
-    firstMonth: monthlyCharges.length > 0 ? monthlyCharges[0].firstMonth : '5', // May
-    firstYear: monthlyCharges.length > 0 ? monthlyCharges[0].firstYear : '2025',
-    createUntilLeaseEnds: monthlyCharges.length > 0 ? monthlyCharges[0].createUntilLeaseEnds : true,
-  });
+interface MonthlyChargeFormProps {
+  charge: ChargeItem;
+  onChange: (updatedCharge: ChargeItem) => void;
+  onDelete?: () => void;
+  onSave?: () => void;
+}
 
-  const [editingOneTime, setEditingOneTime] = useState<ChargeItem>({
-    id: oneTimeCharges.length > 0 ? oneTimeCharges[0].id : uuidv4(),
-    category: oneTimeCharges.length > 0 ? oneTimeCharges[0].category : 'security_deposit',
-    amount: oneTimeCharges.length > 0 ? oneTimeCharges[0].amount : '',
-    description: oneTimeCharges.length > 0 ? oneTimeCharges[0].description : '',
-    dueDate: oneTimeCharges.length > 0 ? oneTimeCharges[0].dueDate : '',
-  });
+const MonthlyChargeForm: React.FC<MonthlyChargeFormProps> = ({ charge, onChange, onDelete, onSave }) => {
+  const formattedFirstChargeDueDate = `May 01, 2025`;
 
+  return (
+    <div className="border rounded-md p-6 space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+          <Select
+            value={charge.category}
+            onValueChange={(value) => onChange({ ...charge, category: value })}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select category" />
+            </SelectTrigger>
+            <SelectContent>
+              {categoryOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
+          <div className="relative">
+            <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+              $
+            </span>
+            <Input
+              value={charge.amount}
+              onChange={(e) => onChange({ ...charge, amount: e.target.value })}
+              className="pl-8"
+              placeholder="0.00"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Description (Optional)
+        </label>
+        <Input
+          value={charge.description}
+          onChange={(e) => onChange({ ...charge, description: e.target.value })}
+          placeholder="Add a description"
+          className="w-full"
+        />
+        <p className="text-xs text-gray-500 mt-1">
+          {charge.description?.length || 0} / 50 characters used
+        </p>
+      </div>
+
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
+          <Select
+            value={charge.dueDay}
+            onValueChange={(value) => onChange({ ...charge, dueDay: value })}
+          >
+            <SelectTrigger className="w-full md:w-40">
+              <SelectValue placeholder="Select due day" />
+            </SelectTrigger>
+            <SelectContent>
+              {dueDayOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-700">First Month</label>
+          <div className="flex space-x-2">
+            <Select
+              value={charge.firstMonth}
+              onValueChange={(value) => onChange({ ...charge, firstMonth: value })}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Month" />
+              </SelectTrigger>
+              <SelectContent>
+                {monthOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select
+              value={charge.firstYear}
+              onValueChange={(value) => onChange({ ...charge, firstYear: value })}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Year" />
+              </SelectTrigger>
+              <SelectContent>
+                {yearOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex items-start space-x-2">
+        <Checkbox
+          id={`createUntilLeaseEnds-${charge.id}`}
+          checked={charge.createUntilLeaseEnds}
+          onCheckedChange={(checked) => 
+            onChange({ 
+              ...charge, 
+              createUntilLeaseEnds: checked === true 
+            })
+          }
+          className="mt-1"
+        />
+        <div>
+          <label
+            htmlFor={`createUntilLeaseEnds-${charge.id}`}
+            className="font-medium text-sm text-gray-700 cursor-pointer"
+          >
+            Create charges until the lease ends
+          </label>
+          <p className="text-sm text-gray-600 mt-1">
+            The first monthly charge will be due on {formattedFirstChargeDueDate} and sent to your
+            tenants every month until you delete this charge or the lease ends.
+          </p>
+        </div>
+      </div>
+
+      <div className="space-y-2 pt-4 border-t">
+        <div className="flex justify-between items-center">
+          <div className="font-medium text-sm">Late Fees</div>
+          <Button variant="outline" size="sm">
+            <Edit className="h-4 w-4 mr-1" /> EDIT
+          </Button>
+        </div>
+        <p className="text-sm text-gray-600">
+          A one-time initial fee of <span className="font-medium">$12</span> will be applied <span className="font-medium">1 day</span> after the rent due date.
+        </p>
+      </div>
+
+      <div className="flex justify-between pt-4">
+        {onDelete ? (
+          <Button variant="outline" onClick={onDelete} className="text-red-500 hover:text-red-700">
+            <Trash2 className="h-4 w-4 mr-2" /> DELETE
+          </Button>
+        ) : (
+          <Button variant="outline">
+            CANCEL
+          </Button>
+        )}
+        <Button onClick={onSave}>
+          SAVE
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+interface OneTimeChargeFormProps {
+  charge: ChargeItem;
+  onChange: (updatedCharge: ChargeItem) => void;
+  onDelete?: () => void;
+  onSave?: () => void;
+}
+
+const OneTimeChargeForm: React.FC<OneTimeChargeFormProps> = ({ charge, onChange, onDelete, onSave }) => {
   const [oneTimeDueDate, setOneTimeDueDate] = useState<Date | undefined>(
-    editingOneTime.dueDate ? new Date(editingOneTime.dueDate) : undefined
+    charge.dueDate ? new Date(charge.dueDate) : undefined
   );
 
-  const handleSaveMonthly = () => {
-    // For simplicity, we'll just save the current editing monthly charge
-    // In a real app, you'd want to manage an array of charges
-    const updatedMonthlyCharges = [editingMonthly];
-    setEditingMonthly({
-      ...editingMonthly,
-      id: uuidv4(), // Reset ID for next new charge
-    });
+  // Format the due date for display
+  const formattedOneTimeDueDate = oneTimeDueDate 
+    ? format(oneTimeDueDate, 'MM/dd/yyyy') 
+    : charge.dueDate || '';
 
-    // In a real implementation, you'd add the charge to an array
-    onSave(updatedMonthlyCharges, oneTimeCharges);
+  return (
+    <div className="border rounded-md p-6 space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+          <Select
+            value={charge.category}
+            onValueChange={(value) => onChange({ ...charge, category: value })}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select category" />
+            </SelectTrigger>
+            <SelectContent>
+              {oneTimeCategoryOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
+          <div className="relative">
+            <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+              $
+            </span>
+            <Input
+              value={charge.amount}
+              onChange={(e) => onChange({ ...charge, amount: e.target.value })}
+              className="pl-8"
+              placeholder="0.00"
+            />
+          </div>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-full justify-start text-left font-normal"
+              >
+                <Calendar className="h-4 w-4 mr-2" />
+                {formattedOneTimeDueDate || "Select a date"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <CalendarComponent
+                mode="single"
+                selected={oneTimeDueDate}
+                onSelect={(date) => {
+                  setOneTimeDueDate(date);
+                  if (date) {
+                    onChange({
+                      ...charge,
+                      dueDate: format(date, 'MM/dd/yyyy')
+                    });
+                  }
+                }}
+                initialFocus
+                className={cn("p-3 pointer-events-auto")}
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Description (Optional)
+        </label>
+        <Input
+          value={charge.description}
+          onChange={(e) => onChange({ ...charge, description: e.target.value })}
+          placeholder="Add a description"
+          className="w-full"
+        />
+        <p className="text-xs text-gray-500 mt-1">
+          {charge.description?.length || 0} / 50 characters used
+        </p>
+      </div>
+
+      <div className="flex justify-between pt-4">
+        {onDelete ? (
+          <Button variant="outline" onClick={onDelete} className="text-red-500 hover:text-red-700">
+            <Trash2 className="h-4 w-4 mr-2" /> DELETE
+          </Button>
+        ) : (
+          <Button variant="outline">
+            CANCEL
+          </Button>
+        )}
+        <Button onClick={onSave}>
+          SAVE
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+// Charge card component to show saved charges
+interface ChargeCardProps {
+  charge: ChargeItem;
+  onEdit: () => void;
+  onDelete: () => void;
+  type: 'monthly' | 'onetime';
+}
+
+const ChargeCard: React.FC<ChargeCardProps> = ({ charge, onEdit, onDelete, type }) => {
+  const categoryMap = [...categoryOptions, ...oneTimeCategoryOptions].reduce((acc, option) => {
+    acc[option.value] = option.label;
+    return acc;
+  }, {} as Record<string, string>);
+
+  const getMonthName = (monthNum: string) => {
+    return monthOptions.find(m => m.value === monthNum)?.label || monthNum;
   };
 
-  const handleSaveOneTime = () => {
-    // For simplicity, we'll just save the current editing one-time charge
-    const updatedOneTimeCharges = [editingOneTime];
-    setEditingOneTime({
-      ...editingOneTime,
-      id: uuidv4(), // Reset ID for next new charge
-    });
+  return (
+    <div className="bg-blue-50 rounded-lg p-4">
+      <div className="flex justify-between items-start">
+        <div>
+          <h3 className="font-medium text-lg">{categoryMap[charge.category] || charge.category}</h3>
+          <p className="text-lg font-bold">${charge.amount}</p>
+          {type === 'monthly' && (
+            <p className="text-sm text-gray-600">
+              Due on the {charge.dueDay}{charge.dueDay === '1' ? 'st' : 'th'} from {getMonthName(charge.firstMonth)} {charge.firstYear} onwards
+            </p>
+          )}
+          {type === 'onetime' && charge.dueDate && (
+            <p className="text-sm text-gray-600">
+              Due on {charge.dueDate}
+            </p>
+          )}
+          {charge.description && (
+            <p className="text-sm mt-1">{charge.description}</p>
+          )}
+        </div>
+        <div className="flex space-x-2">
+          <Button variant="ghost" size="icon" onClick={onEdit} className="h-8 w-8">
+            <Edit className="h-4 w-4" />
+          </Button>
+          <Button variant="ghost" size="icon" onClick={onDelete} className="h-8 w-8 text-red-500 hover:text-red-700">
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
-    // In a real implementation, you'd add the charge to an array
-    onSave(monthlyCharges, updatedOneTimeCharges);
+export function ChargesStep({ monthlyCharges: initialMonthlyCharges, oneTimeCharges: initialOneTimeCharges, onSave }: ChargesStepProps) {
+  const [monthlyCharges, setMonthlyCharges] = useState<ChargeItem[]>(initialMonthlyCharges);
+  const [oneTimeCharges, setOneTimeCharges] = useState<ChargeItem[]>(initialOneTimeCharges);
+  
+  const [editingMonthly, setEditingMonthly] = useState<ChargeItem | null>(null);
+  const [editingOneTime, setEditingOneTime] = useState<ChargeItem | null>(null);
+  
+  const [monthlyCollapsed, setMonthlyCollapsed] = useState(false);
+  const [oneTimeCollapsed, setOneTimeCollapsed] = useState(false);
+  
+  // Create a new monthly charge template
+  const createNewMonthlyCharge = (): ChargeItem => ({
+    id: uuidv4(),
+    category: 'rent',
+    amount: '',
+    description: '',
+    dueDay: '1',
+    firstMonth: '5', // May
+    firstYear: '2025',
+    createUntilLeaseEnds: true,
+  });
+  
+  // Create a new one-time charge template
+  const createNewOneTimeCharge = (): ChargeItem => ({
+    id: uuidv4(),
+    category: 'security_deposit',
+    amount: '',
+    description: '',
+    dueDate: '',
+  });
+
+  const handleAddMonthlyCharge = () => {
+    setEditingMonthly(createNewMonthlyCharge());
+  };
+
+  const handleAddOneTimeCharge = () => {
+    setEditingOneTime(createNewOneTimeCharge());
+  };
+
+  const handleSaveMonthlyCharge = () => {
+    if (editingMonthly) {
+      const updatedCharges = editingMonthly.id && monthlyCharges.some(c => c.id === editingMonthly.id)
+        ? monthlyCharges.map(c => c.id === editingMonthly.id ? editingMonthly : c)
+        : [...monthlyCharges, editingMonthly];
+      
+      setMonthlyCharges(updatedCharges);
+      setEditingMonthly(null);
+    }
+  };
+
+  const handleSaveOneTimeCharge = () => {
+    if (editingOneTime) {
+      const updatedCharges = editingOneTime.id && oneTimeCharges.some(c => c.id === editingOneTime.id)
+        ? oneTimeCharges.map(c => c.id === editingOneTime.id ? editingOneTime : c)
+        : [...oneTimeCharges, editingOneTime];
+      
+      setOneTimeCharges(updatedCharges);
+      setEditingOneTime(null);
+    }
+  };
+
+  const handleEditMonthlyCharge = (charge: ChargeItem) => {
+    setEditingMonthly(charge);
+  };
+
+  const handleEditOneTimeCharge = (charge: ChargeItem) => {
+    setEditingOneTime(charge);
+  };
+
+  const handleDeleteMonthlyCharge = (id: string) => {
+    setMonthlyCharges(monthlyCharges.filter(c => c.id !== id));
+    if (editingMonthly?.id === id) {
+      setEditingMonthly(null);
+    }
+  };
+
+  const handleDeleteOneTimeCharge = (id: string) => {
+    setOneTimeCharges(oneTimeCharges.filter(c => c.id !== id));
+    if (editingOneTime?.id === id) {
+      setEditingOneTime(null);
+    }
   };
 
   const handleContinue = () => {
-    onSave(monthlyCharges.length > 0 ? monthlyCharges : [editingMonthly], 
-           oneTimeCharges.length > 0 ? oneTimeCharges : [editingOneTime]);
+    onSave(monthlyCharges, oneTimeCharges);
   };
 
   const handleSkip = () => {
     onSave([], []);
   };
-
-  // Format the due date for display
-  const formattedOneTimeDueDate = oneTimeDueDate 
-    ? format(oneTimeDueDate, 'MM/dd/yyyy') 
-    : editingOneTime.dueDate || '';
-
-  // Format the first monthly charge due date for display
-  const formattedFirstChargeDueDate = `May 01, 2025`;
 
   return (
     <div className="space-y-6">
@@ -151,275 +529,112 @@ export function ChargesStep({ monthlyCharges, oneTimeCharges, onSave }: ChargesS
 
       {/* Monthly Charges Section */}
       <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <div className="bg-blue-100 p-2 rounded-full">
-            <Calendar className="h-5 w-5 text-blue-700" />
-          </div>
-          <h3 className="font-bold text-lg">Monthly Charges</h3>
-        </div>
-
-        <div className="border rounded-md p-6 space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-              <Select
-                value={editingMonthly.category}
-                onValueChange={(value) => setEditingMonthly({ ...editingMonthly, category: value })}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categoryOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
-              <div className="relative">
-                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
-                  $
-                </span>
-                <Input
-                  value={editingMonthly.amount}
-                  onChange={(e) => setEditingMonthly({ ...editingMonthly, amount: e.target.value })}
-                  className="pl-8"
-                  placeholder="0.00"
-                />
+        <Collapsible open={!monthlyCollapsed} onOpenChange={(open) => setMonthlyCollapsed(!open)}>
+          <div className="bg-gray-50 rounded-lg p-4">
+            <CollapsibleTrigger className="flex items-center gap-2 w-full">
+              <div className="bg-blue-100 p-2 rounded-full">
+                <Calendar className="h-5 w-5 text-blue-700" />
               </div>
-            </div>
+              <h3 className="font-bold text-lg">Monthly Charges</h3>
+            </CollapsibleTrigger>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Description (Optional)
-            </label>
-            <Input
-              value={editingMonthly.description}
-              onChange={(e) => setEditingMonthly({ ...editingMonthly, description: e.target.value })}
-              placeholder="Add a description"
-              className="w-full"
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              {editingMonthly.description.length} / 50 characters used
-            </p>
-          </div>
-
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
-              <Select
-                value={editingMonthly.dueDay}
-                onValueChange={(value) => setEditingMonthly({ ...editingMonthly, dueDay: value })}
-              >
-                <SelectTrigger className="w-full md:w-40">
-                  <SelectValue placeholder="Select due day" />
-                </SelectTrigger>
-                <SelectContent>
-                  {dueDayOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">First Month</label>
-              <div className="flex space-x-2">
-                <Select
-                  value={editingMonthly.firstMonth}
-                  onValueChange={(value) => setEditingMonthly({ ...editingMonthly, firstMonth: value })}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Month" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {monthOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                <Select
-                  value={editingMonthly.firstYear}
-                  onValueChange={(value) => setEditingMonthly({ ...editingMonthly, firstYear: value })}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Year" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {yearOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+          <CollapsibleContent className="pt-4">
+            {/* Display saved charges */}
+            {monthlyCharges.length > 0 && !editingMonthly && (
+              <div className="space-y-3 mb-4">
+                {monthlyCharges.map(charge => (
+                  <ChargeCard 
+                    key={charge.id} 
+                    charge={charge} 
+                    type="monthly"
+                    onEdit={() => handleEditMonthlyCharge(charge)}
+                    onDelete={() => handleDeleteMonthlyCharge(charge.id)}
+                  />
+                ))}
               </div>
-            </div>
-          </div>
+            )}
 
-          <div className="flex items-start space-x-2">
-            <Checkbox
-              id="createUntilLeaseEnds"
-              checked={editingMonthly.createUntilLeaseEnds}
-              onCheckedChange={(checked) => 
-                setEditingMonthly({ 
-                  ...editingMonthly, 
-                  createUntilLeaseEnds: checked === true 
-                })
-              }
-              className="mt-1"
-            />
-            <div>
-              <label
-                htmlFor="createUntilLeaseEnds"
-                className="font-medium text-sm text-gray-700 cursor-pointer"
+            {/* Editing form */}
+            {editingMonthly && (
+              <MonthlyChargeForm 
+                charge={editingMonthly}
+                onChange={setEditingMonthly}
+                onDelete={editingMonthly.id && monthlyCharges.some(c => c.id === editingMonthly.id) 
+                  ? () => handleDeleteMonthlyCharge(editingMonthly.id) 
+                  : undefined}
+                onSave={handleSaveMonthlyCharge}
+              />
+            )}
+
+            {/* Add button when not editing */}
+            {!editingMonthly && (
+              <Button 
+                variant="outline" 
+                className="mt-2" 
+                onClick={handleAddMonthlyCharge}
               >
-                Create charges until the lease ends
-              </label>
-              <p className="text-sm text-gray-600 mt-1">
-                The first monthly charge will be due on {formattedFirstChargeDueDate} and sent to your
-                tenants every month until you delete this charge or the lease ends.
-              </p>
-            </div>
-          </div>
-
-          <div className="space-y-2 pt-4 border-t">
-            <div className="flex justify-between items-center">
-              <div className="font-medium text-sm">Late Fees</div>
-              <Button variant="outline" size="sm">
-                <Edit className="h-4 w-4 mr-1" /> EDIT
+                <Plus className="h-4 w-4 mr-2" /> Add Monthly Charge
               </Button>
-            </div>
-            <p className="text-sm text-gray-600">
-              A one-time initial fee of <span className="font-medium">$12</span> will be applied <span className="font-medium">1 day</span> after the rent due date.
-            </p>
-          </div>
-
-          <div className="flex justify-between pt-4">
-            <Button variant="outline" onClick={() => {}}>
-              CANCEL
-            </Button>
-            <Button onClick={handleSaveMonthly}>
-              SAVE
-            </Button>
-          </div>
-        </div>
+            )}
+          </CollapsibleContent>
+        </Collapsible>
       </div>
 
       {/* One-time Charges Section */}
       <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <div className="bg-blue-100 p-2 rounded-full">
-            <Calendar className="h-5 w-5 text-blue-700" />
-          </div>
-          <h3 className="font-bold text-lg">One-time Charges</h3>
-        </div>
-        <p className="text-gray-600">Good for deposits, pro-rated rent, move-in fees, etc.</p>
-
-        <div className="border rounded-md p-6 space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-              <Select
-                value={editingOneTime.category}
-                onValueChange={(value) => setEditingOneTime({ ...editingOneTime, category: value })}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {oneTimeCategoryOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
-              <div className="relative">
-                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
-                  $
-                </span>
-                <Input
-                  value={editingOneTime.amount}
-                  onChange={(e) => setEditingOneTime({ ...editingOneTime, amount: e.target.value })}
-                  className="pl-8"
-                  placeholder="0.00"
-                />
+        <Collapsible open={!oneTimeCollapsed} onOpenChange={(open) => setOneTimeCollapsed(!open)}>
+          <div className="bg-gray-50 rounded-lg p-4">
+            <CollapsibleTrigger className="flex items-center gap-2 w-full">
+              <div className="bg-blue-100 p-2 rounded-full">
+                <Calendar className="h-5 w-5 text-blue-700" />
               </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-left font-normal"
-                  >
-                    <Calendar className="h-4 w-4 mr-2" />
-                    {formattedOneTimeDueDate || "Select a date"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <CalendarComponent
-                    mode="single"
-                    selected={oneTimeDueDate}
-                    onSelect={(date) => {
-                      setOneTimeDueDate(date);
-                      if (date) {
-                        setEditingOneTime({
-                          ...editingOneTime,
-                          dueDate: format(date, 'MM/dd/yyyy')
-                        });
-                      }
-                    }}
-                    initialFocus
-                    className={cn("p-3 pointer-events-auto")}
+              <h3 className="font-bold text-lg">One-time Charges</h3>
+            </CollapsibleTrigger>
+          </div>
+          
+          <CollapsibleContent className="pt-2">
+            <p className="text-gray-600 mb-4">Good for deposits, pro-rated rent, move-in fees, etc.</p>
+
+            {/* Display saved charges */}
+            {oneTimeCharges.length > 0 && !editingOneTime && (
+              <div className="space-y-3 mb-4">
+                {oneTimeCharges.map(charge => (
+                  <ChargeCard 
+                    key={charge.id} 
+                    charge={charge} 
+                    type="onetime"
+                    onEdit={() => handleEditOneTimeCharge(charge)} 
+                    onDelete={() => handleDeleteOneTimeCharge(charge.id)}
                   />
-                </PopoverContent>
-              </Popover>
-            </div>
-          </div>
+                ))}
+              </div>
+            )}
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Description (Optional)
-            </label>
-            <Input
-              value={editingOneTime.description}
-              onChange={(e) => setEditingOneTime({ ...editingOneTime, description: e.target.value })}
-              placeholder="Add a description"
-              className="w-full"
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              {editingOneTime.description.length} / 50 characters used
-            </p>
-          </div>
+            {/* Editing form */}
+            {editingOneTime && (
+              <OneTimeChargeForm 
+                charge={editingOneTime}
+                onChange={setEditingOneTime}
+                onDelete={editingOneTime.id && oneTimeCharges.some(c => c.id === editingOneTime.id) 
+                  ? () => handleDeleteOneTimeCharge(editingOneTime.id) 
+                  : undefined}
+                onSave={handleSaveOneTimeCharge}
+              />
+            )}
 
-          <div className="flex justify-between pt-4">
-            <Button variant="outline" onClick={() => {}}>
-              CANCEL
-            </Button>
-            <Button onClick={handleSaveOneTime}>
-              SAVE
-            </Button>
-          </div>
-        </div>
+            {/* Add button when not editing */}
+            {!editingOneTime && (
+              <Button 
+                variant="outline" 
+                className="mt-2" 
+                onClick={handleAddOneTimeCharge}
+              >
+                <Plus className="h-4 w-4 mr-2" /> Add One-Time Charge
+              </Button>
+            )}
+          </CollapsibleContent>
+        </Collapsible>
       </div>
 
       {/* Helpful Info Box */}
