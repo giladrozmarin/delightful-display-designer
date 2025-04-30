@@ -4,7 +4,7 @@ import { AppSidebar } from '@/components/AppSidebar';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Search, Plus, MoreHorizontal, FileDown, Columns, Trash2, Edit, ArrowLeft } from 'lucide-react';
+import { Search, Plus, MoreHorizontal, FileDown, Columns, Trash2, Edit } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/table';
 import { toast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
-import { Dialog, DialogContent, DialogTitle, DialogHeader, DialogFooter, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle, DialogHeader, DialogFooter, DialogTrigger, DialogDescription, DialogClose } from '@/components/ui/dialog';
 import { ContractorForm } from '@/components/contractors/ContractorForm';
 import { ContractorDetails } from '@/components/contractors/ContractorDetails';
 
@@ -182,6 +182,10 @@ export default function Contractors() {
     if (daysUntilExpiration < 0) return 'expired';
     if (daysUntilExpiration <= 30) return 'expiring-soon';
     return 'valid';
+  };
+
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
   };
 
   return (
@@ -381,9 +385,12 @@ export default function Contractors() {
                 <ContractorForm 
                   contractor={selectedContractor} 
                   onSave={handleSaveContractor}
-                  onCancel={() => setIsDialogOpen(false)}
+                  onCancel={handleCloseDialog}
                 />
               )}
+              <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+                <span className="sr-only">Close</span>
+              </DialogClose>
             </DialogContent>
           </Dialog>
         </main>
