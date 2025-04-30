@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -312,17 +311,21 @@ export function AddPropertyForm({ onClose }: AddPropertyFormProps) {
                             </p>
                           </div>
                           <div 
-                            className={`p-4 border rounded-lg cursor-pointer ${
-                              field.value === 'commercial' ? 'border-blue-600 bg-blue-50' : 'border-gray-200'
+                            className={`p-4 border rounded-lg cursor-not-allowed opacity-75 relative ${
+                              field.value === 'commercial' ? 'border-gray-300 bg-gray-50' : 'border-gray-200'
                             }`}
-                            onClick={() => typeForm.setValue('type', 'commercial')}
+                            data-lov-disabled
                           >
+                            <div className="absolute top-0 right-0 bg-amber-500 text-white px-2 py-0.5 rounded-bl-lg rounded-tr-lg text-xs font-medium">
+                              COMING SOON
+                            </div>
                             <div className="flex items-center gap-3 mb-2">
-                              <Store className="text-blue-600 h-5 w-5" />
+                              <Store className="text-gray-600 h-5 w-5" />
                               <span className="font-medium">Commercial</span>
                             </div>
                             <p className="text-sm text-gray-500">
                               For businesses, offices, retail spaces, or other commercial purposes.
+                              <span className="block mt-1 text-amber-600 font-medium">This feature will be available in a future update.</span>
                             </p>
                           </div>
                         </div>
