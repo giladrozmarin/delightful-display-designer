@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import { Label } from '@/components/ui/label';
@@ -21,19 +20,17 @@ export function InvoiceDetailContent({ invoice, onConfigurePayment }: InvoiceDet
   
   // Mock contractor data based on the invoice's contractor information
   const mockContractor: Contractor = {
-    
-      id: '1',
-      company: 'Ace Plumbing',
-      address: '11 Miami Avenue, Fredericktown',
-      email: 'info@aceplumbing.com',
-      phone: '(951) 394-0252',
-      type: 'Plumbing',
-      insuranceExpiration: '2024-12-15',
-      workersCompExpiration: '2024-11-30',
-      taxpayerId: '53-8796421',
-      paymentTerms: 'Net 30',
-      isPreferred: true
-    
+    id: '1',
+    company: 'Ace Plumbing',
+    address: '11 Miami Avenue, Fredericktown',
+    email: 'info@aceplumbing.com',
+    phone: '(951) 394-0252',
+    type: 'Plumbing',
+    insuranceExpiration: '2024-12-15',
+    workersCompExpiration: '2024-11-30',
+    taxpayerId: '53-8796421',
+    paymentTerms: 'Net 30',
+    isPreferred: true
   };
   
   const handleOpenContractorModal = () => {
