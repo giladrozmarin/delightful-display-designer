@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AppSidebar } from '@/components/AppSidebar';
@@ -5,7 +6,7 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ArrowLeft, Home, FileText, Users, File, Wrench, DollarSign, FilePlus, BookOpen, CheckCircle2, Clock, Wrench as WrenchIcon, Plus, X } from 'lucide-react';
+import { ArrowLeft, Home, FileText, Users, File, Wrench, DollarSign, FilePlus, BookOpen, CheckCircle2, Clock, Wrench as WrenchIcon, Plus, X, UserPlus } from 'lucide-react';
 import { UnitEditDialog } from '@/components/unit-manager/UnitEditDialog';
 import { UnitOverview } from '@/components/unit-manager/UnitOverview';
 import { TenantDetails } from '@/components/unit-manager/TenantDetails';
@@ -271,13 +272,13 @@ export default function UnitDetails() {
     });
   };
 
-  const selectedTemplate = selectedTemplateId 
-    ? applicationTemplates.find(t => t.id === selectedTemplateId)
-    : null;
-
   const handleInviteRenter = () => {
     setInviteDialogOpen(true);
   };
+
+  const selectedTemplate = selectedTemplateId 
+    ? applicationTemplates.find(t => t.id === selectedTemplateId)
+    : null;
 
   return (
     <SidebarProvider>
@@ -356,12 +357,29 @@ export default function UnitDetails() {
                     </Button>
                   </CardDescription>
                 </CardHeader>
+                <CardContent className="pt-2">
+                  <Button className="bg-green-600 hover:bg-green-700" onClick={handleInviteRenter}>
+                    <UserPlus className="h-4 w-4 mr-2" />
+                    Invite Renter To Apply
+                  </Button>
+                </CardContent>
               </Card>
             )}
             
             {!selectedTemplate && (
-              <div className="mt-4">
+              <div className="mt-4 flex flex-col gap-4">
                 <ApplicationTemplateSelector onSelect={handleTemplateSelect} />
+                <Card className="p-4">
+                  <CardContent className="p-0">
+                    <div className="text-center">
+                      <p className="text-gray-600 mb-4">Select an application template above to enable tenant invitations.</p>
+                      <Button className="bg-green-600 hover:bg-green-700" disabled onClick={handleInviteRenter}>
+                        <UserPlus className="h-4 w-4 mr-2" />
+                        Invite Renter To Apply
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             )}
             
