@@ -29,7 +29,7 @@ export function ApplicationTemplateSelector({ onSelect }: ApplicationTemplateSel
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="bg-green-600 hover:bg-green-700">
+        <Button className="bg-green-600 hover:bg-green-700 w-auto">
           <FilePlus className="h-4 w-4 mr-2" />
           Add Application Form
         </Button>
