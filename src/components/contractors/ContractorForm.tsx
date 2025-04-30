@@ -125,205 +125,220 @@ export function ContractorForm({ contractor, onSave, onCancel }: ContractorFormP
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Company & Contact Info Section */}
             <div className="space-y-4 md:col-span-2">
-              <h3 className="text-lg font-medium border-b pb-2">Company & Contact Info</h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="company"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Company Name*</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Company name" {...field} required />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Contact Person</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Contact name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              
-              <FormField
-                control={form.control}
-                name="address"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Address*</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Street address" {...field} required />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input type="email" placeholder="Email address" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="phone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Phone*</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Phone number" {...field} required />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              
-              <div className="flex items-center space-x-2">
-                <FormField
-                  control={form.control}
-                  name="isPreferred"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <Switch 
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                      <div className="space-y-1 leading-none">
-                        <FormLabel>Preferred Contractor</FormLabel>
-                        <FormDescription>
-                          Mark as a preferred service provider
-                        </FormDescription>
-                      </div>
-                    </FormItem>
-                  )}
-                />
-              </div>
+              <Collapsible className="border rounded-md p-4" defaultOpen>
+                <CollapsibleTrigger className="flex items-center justify-between w-full">
+                  <h3 className="text-lg font-medium">Company & Contact Info</h3>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="pt-4 space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="company"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Company Name*</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Company name" {...field} required />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Contact Person</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Contact name" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  
+                  <FormField
+                    control={form.control}
+                    name="address"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Address*</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Street address" {...field} required />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <Input type="email" placeholder="Email address" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Phone*</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Phone number" {...field} required />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <FormField
+                      control={form.control}
+                      name="isPreferred"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <Switch 
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                          <div className="space-y-1 leading-none">
+                            <FormLabel>Preferred Contractor</FormLabel>
+                            <FormDescription>
+                              Mark as a preferred service provider
+                            </FormDescription>
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
             </div>
             
             {/* Insurance & Compliance Section */}
             <div className="space-y-4 md:col-span-2">
-              <h3 className="text-lg font-medium border-b pb-2">Insurance & Compliance</h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="insuranceExpiration"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Liability Insurance Expiration</FormLabel>
-                      <FormControl>
-                        <Input type="date" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="workersCompExpiration"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Workers Comp Expiration</FormLabel>
-                      <FormControl>
-                        <Input type="date" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+              <Collapsible className="border rounded-md p-4" defaultOpen>
+                <CollapsibleTrigger className="flex items-center justify-between w-full">
+                  <h3 className="text-lg font-medium">Insurance & Compliance</h3>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="pt-4 space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="insuranceExpiration"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Liability Insurance Expiration</FormLabel>
+                          <FormControl>
+                            <Input type="date" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="workersCompExpiration"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Workers Comp Expiration</FormLabel>
+                          <FormControl>
+                            <Input type="date" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
             </div>
             
             {/* Payment & Financial Section */}
             <div className="space-y-4 md:col-span-2">
-              <h3 className="text-lg font-medium border-b pb-2">Payment & Financial Information</h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="taxpayerId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Taxpayer ID</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Tax ID or SSN" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="paymentTerms"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Payment Terms</FormLabel>
-                      <Select 
-                        onValueChange={field.onChange} 
-                        defaultValue={field.value}
-                      >
+              <Collapsible className="border rounded-md p-4" defaultOpen>
+                <CollapsibleTrigger className="flex items-center justify-between w-full">
+                  <h3 className="text-lg font-medium">Payment & Financial Information</h3>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="pt-4 space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="taxpayerId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Taxpayer ID</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Tax ID or SSN" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="paymentTerms"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Payment Terms</FormLabel>
+                          <Select 
+                            onValueChange={field.onChange} 
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select payment terms" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="bg-white">
+                              {paymentTermsOptions.map(term => (
+                                <SelectItem key={term} value={term}>
+                                  {term}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  
+                  <FormField
+                    control={form.control}
+                    name="billingCode"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Default Billing Code</FormLabel>
                         <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select payment terms" />
-                          </SelectTrigger>
+                          <Input placeholder="Billing code" {...field} />
                         </FormControl>
-                        <SelectContent className="bg-white">
-                          {paymentTermsOptions.map(term => (
-                            <SelectItem key={term} value={term}>
-                              {term}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              
-              <FormField
-                control={form.control}
-                name="billingCode"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Default Billing Code</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Billing code" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CollapsibleContent>
+              </Collapsible>
             </div>
             
-            {/* Banking Information Section - NEW */}
+            {/* Banking Information Section */}
             <div className="space-y-4 md:col-span-2">
               <Collapsible className="border rounded-md p-4">
                 <CollapsibleTrigger className="flex items-center justify-between w-full">
@@ -387,58 +402,68 @@ export function ContractorForm({ contractor, onSave, onCancel }: ContractorFormP
             
             {/* Contractor Type Section */}
             <div className="space-y-4 md:col-span-2">
-              <h3 className="text-lg font-medium border-b pb-2">Contractor Type</h3>
-              
-              <FormField
-                control={form.control}
-                name="type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Contractor Type*</FormLabel>
-                    <Select 
-                      onValueChange={field.onChange} 
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select contractor type" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent className="bg-white">
-                        {contractorTypes.map(type => (
-                          <SelectItem key={type} value={type}>
-                            {type}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <Collapsible className="border rounded-md p-4" defaultOpen>
+                <CollapsibleTrigger className="flex items-center justify-between w-full">
+                  <h3 className="text-lg font-medium">Contractor Type</h3>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="pt-4 space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="type"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Contractor Type*</FormLabel>
+                        <Select 
+                          onValueChange={field.onChange} 
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select contractor type" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="bg-white">
+                            {contractorTypes.map(type => (
+                              <SelectItem key={type} value={type}>
+                                {type}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CollapsibleContent>
+              </Collapsible>
             </div>
             
             {/* Notes Section */}
             <div className="space-y-4 md:col-span-2">
-              <h3 className="text-lg font-medium border-b pb-2">Notes</h3>
-              
-              <FormField
-                control={form.control}
-                name="notes"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Additional Notes</FormLabel>
-                    <FormControl>
-                      <Textarea 
-                        placeholder="Enter any additional notes about this contractor" 
-                        className="min-h-[100px]"
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <Collapsible className="border rounded-md p-4" defaultOpen>
+                <CollapsibleTrigger className="flex items-center justify-between w-full">
+                  <h3 className="text-lg font-medium">Notes</h3>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="pt-4 space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="notes"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Additional Notes</FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            placeholder="Enter any additional notes about this contractor" 
+                            className="min-h-[100px]"
+                            {...field} 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CollapsibleContent>
+              </Collapsible>
             </div>
           </div>
 
