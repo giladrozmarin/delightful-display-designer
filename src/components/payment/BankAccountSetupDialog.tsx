@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -80,8 +81,12 @@ export function BankAccountSetupDialog({
             </div>
           </Card>
           
-          <Card className="p-6 border">
-            <div className="flex flex-col items-center justify-center h-full space-y-4">
+          <Card className="p-6 border relative">
+            <div className="absolute top-0 right-0 px-2 py-1 text-white text-xs font-medium bg-amber-500">
+              COMING SOON
+            </div>
+            
+            <div className="flex flex-col items-center justify-center h-full space-y-4 opacity-70">
               <div className="w-16 h-16 flex items-center justify-center bg-gray-100 rounded-full">
                 <CreditCard className="h-8 w-8 text-gray-600" />
               </div>
@@ -89,7 +94,7 @@ export function BankAccountSetupDialog({
               <p className="text-center text-gray-600 text-sm">
                 Add your account and routing numbers in minutes
               </p>
-              <Button variant="outline" className="w-full border-blue-800 text-blue-800 hover:bg-blue-50" onClick={handleManualEntry}>
+              <Button variant="outline" className="w-full border-blue-800 text-blue-800 hover:bg-blue-50" disabled={true}>
                 ENTER MANUALLY
               </Button>
             </div>
