@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/AppSidebar';
@@ -22,7 +21,7 @@ import {
 } from '@/components/ui/table';
 import { toast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
-import { Dialog, DialogContent, DialogTitle, DialogHeader, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle, DialogHeader, DialogFooter, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { ContractorForm } from '@/components/contractors/ContractorForm';
 import { ContractorDetails } from '@/components/contractors/ContractorDetails';
 
@@ -373,13 +372,6 @@ export default function Contractors() {
 
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>
-                  {dialogMode === 'add' ? 'Add New Contractor' : 
-                   dialogMode === 'edit' ? 'Edit Contractor' : 'Contractor Details'}
-                </DialogTitle>
-              </DialogHeader>
-              
               {dialogMode === 'view' && selectedContractor ? (
                 <ContractorDetails 
                   contractor={selectedContractor} 

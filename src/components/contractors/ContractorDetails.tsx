@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { DialogFooter } from '@/components/ui/dialog';
+import { DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Edit, Phone, Mail, MapPin, Calendar, FileText } from 'lucide-react';
 import { Contractor } from '@/pages/Contractors';
 
@@ -35,6 +35,10 @@ export function ContractorDetails({ contractor, onEdit }: ContractorDetailsProps
 
   return (
     <div className="space-y-6">
+      <DialogHeader>
+        <DialogTitle>Contractor Details</DialogTitle>
+      </DialogHeader>
+      
       <div className="flex flex-col sm:flex-row sm:items-start justify-between">
         <div>
           <h2 className="text-2xl font-bold flex items-center gap-2">

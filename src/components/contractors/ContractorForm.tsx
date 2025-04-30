@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Contractor, ContractorType } from '@/pages/Contractors';
-import { DialogFooter } from '@/components/ui/dialog';
+import { DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Check } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
@@ -82,7 +82,11 @@ export function ContractorForm({ contractor, onSave, onCancel }: ContractorFormP
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+      <DialogHeader>
+        <DialogTitle>{contractor ? 'Edit Contractor' : 'Add New Contractor'}</DialogTitle>
+      </DialogHeader>
+      
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6 mt-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Company & Contact Info Section */}
           <div className="space-y-4 md:col-span-2">
