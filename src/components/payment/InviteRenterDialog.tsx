@@ -101,9 +101,11 @@ export function InviteRenterDialog({
                 </div>
                 <h3 className="text-lg font-medium">Renter Info</h3>
               </div>
-              {open => (
-                <div>{open ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}</div>
-              )}
+              {/* Fixed TS error by using a React element instead of function */}
+              <div className="transition-transform">
+                <ChevronDown className="h-4 w-4 data-[state=open]:hidden" />
+                <ChevronUp className="h-4 w-4 hidden data-[state=open]:block" />
+              </div>
             </CollapsibleTrigger>
             <CollapsibleContent className="pt-4 space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -114,6 +116,7 @@ export function InviteRenterDialog({
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
                     placeholder="Enter first name"
+                    className="mt-1"
                   />
                 </div>
                 <div>
@@ -123,6 +126,7 @@ export function InviteRenterDialog({
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
                     placeholder="Enter last name"
+                    className="mt-1"
                   />
                 </div>
               </div>
@@ -132,7 +136,7 @@ export function InviteRenterDialog({
                 <RadioGroup 
                   value={contactMethod} 
                   onValueChange={setContactMethod}
-                  className="flex space-x-4"
+                  className="flex flex-wrap gap-4"
                 >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="email" id="email-option" />
@@ -152,7 +156,7 @@ export function InviteRenterDialog({
               {(contactMethod === 'email' || contactMethod === 'both') && (
                 <div>
                   <Label htmlFor="renterEmail">Renter's Email</Label>
-                  <div className="relative">
+                  <div className="relative mt-1">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                     <Input 
                       id="renterEmail" 
@@ -169,7 +173,7 @@ export function InviteRenterDialog({
               {(contactMethod === 'text' || contactMethod === 'both') && (
                 <div>
                   <Label htmlFor="renterPhone">Renter's Phone</Label>
-                  <div className="relative">
+                  <div className="relative mt-1">
                     <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                     <Input 
                       id="renterPhone" 
@@ -194,14 +198,16 @@ export function InviteRenterDialog({
                 </div>
                 <h3 className="text-lg font-medium">Rental Property</h3>
               </div>
-              {open => (
-                <div>{open ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}</div>
-              )}
+              {/* Fixed TS error by using a React element instead of function */}
+              <div className="transition-transform">
+                <ChevronDown className="h-4 w-4 data-[state=open]:hidden" />
+                <ChevronUp className="h-4 w-4 hidden data-[state=open]:block" />
+              </div>
             </CollapsibleTrigger>
             <CollapsibleContent className="pt-4 space-y-4">
               <div>
                 <Label htmlFor="propertyAddress">Property Applying To</Label>
-                <div className="border rounded-md p-3 bg-gray-50 text-gray-700">
+                <div className="border rounded-md p-3 bg-gray-50 text-gray-700 mt-1">
                   {fullAddress} #{unit.number}
                 </div>
               </div>
@@ -209,7 +215,7 @@ export function InviteRenterDialog({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="rentAmount">Rent Amount</Label>
-                  <div className="relative">
+                  <div className="relative mt-1">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
                     <Input 
                       id="rentAmount" 
@@ -222,7 +228,7 @@ export function InviteRenterDialog({
                 </div>
                 <div>
                   <Label htmlFor="securityDeposit">Security Deposit</Label>
-                  <div className="relative">
+                  <div className="relative mt-1">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
                     <Input 
                       id="securityDeposit" 
@@ -246,9 +252,11 @@ export function InviteRenterDialog({
                 </div>
                 <h3 className="text-lg font-medium">Application Type</h3>
               </div>
-              {open => (
-                <div>{open ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}</div>
-              )}
+              {/* Fixed TS error by using a React element instead of function */}
+              <div className="transition-transform">
+                <ChevronDown className="h-4 w-4 data-[state=open]:hidden" />
+                <ChevronUp className="h-4 w-4 hidden data-[state=open]:block" />
+              </div>
             </CollapsibleTrigger>
             <CollapsibleContent className="pt-4 space-y-4">
               <RadioGroup 
@@ -256,7 +264,7 @@ export function InviteRenterDialog({
                 onValueChange={setApplicationType}
                 className="space-y-4"
               >
-                <div className={`border rounded-lg p-4 relative ${applicationType === 'premium' ? 'border-blue-600' : ''}`}>
+                <div className={`border rounded-lg p-4 relative ${applicationType === 'premium' ? 'border-blue-600 bg-blue-50' : ''}`}>
                   <div className="absolute top-0 right-0 bg-blue-600 text-white px-2 py-0.5 rounded-bl-lg rounded-tr-lg text-xs font-medium">
                     INCLUDED WITH PREMIUM
                   </div>
@@ -272,12 +280,12 @@ export function InviteRenterDialog({
                   </div>
                 </div>
                 
-                <div className={`border rounded-lg p-4 ${applicationType === 'standard' ? 'border-blue-600' : ''}`}>
+                <div className={`border rounded-lg p-4 ${applicationType === 'standard' ? 'border-blue-600 bg-blue-50' : ''}`}>
                   <div className="flex items-start gap-3">
                     <RadioGroupItem value="standard" id="standard-option" className="mt-1" />
                     <div>
                       <Label htmlFor="standard-option" className="text-base font-medium">
-                        STANDARD SCREENING REPORT
+                        Standard Screening Report
                       </Label>
                       <div>
                         <div>Background, Eviction, Credit Only</div>
@@ -303,13 +311,13 @@ export function InviteRenterDialog({
               onClick={handleSendInvite} 
               className="flex-1 bg-blue-800 hover:bg-blue-900"
             >
-              <Check className="mr-2 h-4 w-4" /> Invite
+              <Check className="mr-2 h-4 w-4" /> Send Invitation
             </Button>
           </DialogFooter>
           
           {/* Demo Link */}
           <div className="text-center text-sm">
-            <p>Want to see the application before you invite a renter to apply?</p>
+            <p className="text-gray-500">Want to see the application before you invite a renter to apply?</p>
             <Button variant="link" className="text-blue-600 font-medium p-0">
               Demo our test application.
             </Button>
