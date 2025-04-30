@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,6 +24,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useToast } from "@/hooks/use-toast";
 
 // Property wizard schemas for each step
 const propertyTypeSchema = z.object({
@@ -40,6 +40,7 @@ const addressSchema = z.object({
   propertyName: z.string().optional(),
 });
 
+// Updated unit schema to handle the single family home case
 const unitSchema = z.object({
   units: z.array(z.object({
     name: z.string().min(1, "Unit name is required"),
@@ -48,6 +49,11 @@ const unitSchema = z.object({
     size: z.string().optional(),
     marketRent: z.string().optional(),
   })).min(1, "At least one unit is required"),
+  // For single family homes
+  bedrooms: z.string().optional(),
+  bathrooms: z.string().optional(),
+  squareFootage: z.string().optional(),
+  monthlyRent: z.string().optional(),
 });
 
 const bankAccountSchema = z.object({
@@ -86,6 +92,8 @@ interface AddPropertyFormProps {
 export function AddPropertyForm({ onClose }: AddPropertyFormProps) {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<Partial<PropertyFormData>>({});
+  const { toast } = useToast();
+  const [isSingleFamilyHome, setIsSingleFamilyHome] = useState(false);
 
   // Step 1: Property Type
   const typeForm = useForm<z.infer<typeof propertyTypeSchema>>({
@@ -95,6 +103,12 @@ export function AddPropertyForm({ onClose }: AddPropertyFormProps) {
       subType: "",
     },
   });
+
+  // Watch for changes to subType to detect single family homes
+  useEffect(() => {
+    const subType = typeForm.watch("subType");
+    setIsSingleFamilyHome(subType === "single_family");
+  }, [typeForm.watch("subType")]);
 
   // Step 2: Property Address
   const addressForm = useForm<z.infer<typeof addressSchema>>({
@@ -113,6 +127,10 @@ export function AddPropertyForm({ onClose }: AddPropertyFormProps) {
     resolver: zodResolver(unitSchema),
     defaultValues: formData.units || {
       units: [{ name: "", beds: "", baths: "", size: "", marketRent: "" }],
+      bedrooms: "",
+      bathrooms: "",
+      squareFootage: "",
+      monthlyRent: ""
     },
   });
 
@@ -146,11 +164,15 @@ export function AddPropertyForm({ onClose }: AddPropertyFormProps) {
   });
 
   const addUnit = () => {
+    if (isSingleFamilyHome) return; // Don't add units for single family homes
+    
     const currentUnits = unitForm.getValues().units || [];
     unitForm.setValue("units", [...currentUnits, { name: "", beds: "", baths: "", size: "", marketRent: "" }]);
   };
 
   const removeUnit = (index: number) => {
+    if (isSingleFamilyHome) return; // Don't remove units for single family homes
+    
     const currentUnits = unitForm.getValues().units || [];
     if (currentUnits.length > 1) {
       unitForm.setValue("units", currentUnits.filter((_, i) => i !== index));
@@ -188,6 +210,21 @@ export function AddPropertyForm({ onClose }: AddPropertyFormProps) {
       case 3:
         isValid = await unitForm.trigger();
         if (isValid) {
+          // For single family homes, auto-create a unit with the property address
+          if (isSingleFamilyHome) {
+            const propertyAddress = addressForm.getValues().address;
+            const propertyName = addressForm.getValues().propertyName || propertyAddress;
+            
+            // Create a single unit with the property data
+            unitForm.setValue("units", [{
+              name: propertyName,
+              beds: unitForm.getValues().bedrooms,
+              baths: unitForm.getValues().bathrooms,
+              size: unitForm.getValues().squareFootage,
+              marketRent: unitForm.getValues().monthlyRent
+            }]);
+          }
+          
           setFormData({ ...formData, units: unitForm.getValues() });
           setStep(4);
         }
@@ -211,7 +248,23 @@ export function AddPropertyForm({ onClose }: AddPropertyFormProps) {
         if (isValid) {
           setFormData({ ...formData, ownership: ownershipForm.getValues() });
           // Final submission - add property
-          console.log("Form data submitted:", { ...formData, ownership: ownershipForm.getValues() });
+          const finalFormData = { 
+            ...formData, 
+            propertyType: typeForm.getValues(),
+            address: addressForm.getValues(),
+            units: unitForm.getValues(),
+            bankAccount: bankAccountForm.getValues(),
+            reserveFunds: reserveFundsForm.getValues(),
+            ownership: ownershipForm.getValues() 
+          };
+          
+          console.log("Form data submitted:", finalFormData);
+          
+          toast({
+            title: "Property created successfully",
+            description: `${addressForm.getValues().propertyName || addressForm.getValues().address} has been added to your properties.`
+          });
+          
           onClose();
         }
         break;
@@ -339,7 +392,10 @@ export function AddPropertyForm({ onClose }: AddPropertyFormProps) {
                     <FormItem>
                       <FormLabel className="text-base font-semibold">Property Sub-Type</FormLabel>
                       <Select 
-                        onValueChange={field.onChange} 
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                          setIsSingleFamilyHome(value === "single_family");
+                        }} 
                         defaultValue={field.value}
                       >
                         <FormControl>
@@ -373,6 +429,15 @@ export function AddPropertyForm({ onClose }: AddPropertyFormProps) {
                     </FormItem>
                   )}
                 />
+
+                {isSingleFamilyHome && (
+                  <div className="bg-green-50 p-4 rounded-lg border border-green-200 mt-4">
+                    <p className="text-sm text-green-800">
+                      <span className="font-semibold">Single Family Home Selected:</span> For single family homes, 
+                      property details will be managed at the property level rather than creating separate units.
+                    </p>
+                  </div>
+                )}
 
                 <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200 mt-4">
                   <p className="text-sm text-yellow-800">
@@ -500,145 +565,234 @@ export function AddPropertyForm({ onClose }: AddPropertyFormProps) {
           <Form {...unitForm}>
             <form className="space-y-6">
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-base font-semibold">Units</h3>
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    onClick={addUnit}
-                    className="flex items-center gap-2"
-                  >
-                    <Plus className="h-4 w-4" /> Add Another Unit
-                  </Button>
-                </div>
-                
-                <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 mb-4">
-                  <div className="flex gap-2 items-start">
-                    <div className="bg-blue-100 text-blue-800 p-1 rounded-full">
-                      <DoorClosed className="h-4 w-4" />
-                    </div>
-                    <div>
-                      <p className="text-sm text-blue-800 font-medium">What are Units?</p>
-                      <p className="text-sm text-blue-800">
-                        Units are leasable spaces within your property, such as homes, rooms, or apartments.
-                        Adding at least one unit is required because leases are associated with units.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                
-                {unitForm.watch("units")?.map((_, index) => (
-                  <Card key={index} className="border border-gray-200">
-                    <CardContent className="pt-6">
-                      <div className="flex justify-between items-center mb-4">
-                        <h4 className="font-medium">Unit {index + 1}</h4>
-                        {unitForm.watch("units").length > 1 && (
-                          <Button 
-                            type="button" 
-                            variant="ghost" 
-                            size="sm"
-                            onClick={() => removeUnit(index)}
-                            className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50"
-                          >
-                            Remove
-                          </Button>
-                        )}
+                {isSingleFamilyHome ? (
+                  <>
+                    <h3 className="text-base font-semibold">Property Details</h3>
+                    
+                    <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 mb-4">
+                      <div className="flex gap-2 items-start">
+                        <div className="bg-blue-100 text-blue-800 p-1 rounded-full">
+                          <Home className="h-4 w-4" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-blue-800 font-medium">Single Family Home</p>
+                          <p className="text-sm text-blue-800">
+                            For single family homes, please enter property details directly. These details will be 
+                            applied to the property as a whole rather than creating separate units.
+                          </p>
+                        </div>
                       </div>
-                      
-                      <div className="grid grid-cols-2 gap-4">
-                        <FormField
-                          control={unitForm.control}
-                          name={`units.${index}.name`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Unit Name <span className="text-red-500">*</span></FormLabel>
-                              <FormControl>
-                                <Input placeholder="e.g., Apt 101, Suite A" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <div className="grid grid-cols-2 gap-2">
+                    </div>
+                    
+                    <Card className="border border-gray-200">
+                      <CardContent className="pt-6">
+                        <div className="grid grid-cols-2 gap-4">
                           <FormField
                             control={unitForm.control}
-                            name={`units.${index}.beds`}
+                            name="bedrooms"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Beds</FormLabel>
+                                <FormLabel>Bedrooms</FormLabel>
                                 <FormControl>
                                   <Input type="number" placeholder="0" {...field} />
                                 </FormControl>
+                                <FormMessage />
                               </FormItem>
                             )}
                           />
                           
                           <FormField
                             control={unitForm.control}
-                            name={`units.${index}.baths`}
+                            name="bathrooms"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Baths</FormLabel>
+                                <FormLabel>Bathrooms</FormLabel>
                                 <FormControl>
                                   <Input type="number" placeholder="0" {...field} />
                                 </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          
+                          <FormField
+                            control={unitForm.control}
+                            name="squareFootage"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Square Footage</FormLabel>
+                                <FormControl>
+                                  <Input type="number" placeholder="0" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          
+                          <FormField
+                            control={unitForm.control}
+                            name="monthlyRent"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Monthly Rent ($)</FormLabel>
+                                <FormControl>
+                                  <Input type="number" placeholder="0" {...field} />
+                                </FormControl>
+                                <FormMessage />
                               </FormItem>
                             )}
                           />
                         </div>
-                        
-                        <FormField
-                          control={unitForm.control}
-                          name={`units.${index}.size`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Size (sq ft)</FormLabel>
-                              <FormControl>
-                                <Input type="number" placeholder="0" {...field} />
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <FormField
-                          control={unitForm.control}
-                          name={`units.${index}.marketRent`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Market Rent ($)</FormLabel>
-                              <FormControl>
-                                <Input type="number" placeholder="0" {...field} />
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-                
-                <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-                  <div className="flex gap-2 items-start">
-                    <div className="bg-yellow-100 text-yellow-800 p-1 rounded-full">
-                      <ReceiptText className="h-4 w-4" />
+                      </CardContent>
+                    </Card>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-base font-semibold">Units</h3>
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        onClick={addUnit}
+                        className="flex items-center gap-2"
+                      >
+                        <Plus className="h-4 w-4" /> Add Another Unit
+                      </Button>
                     </div>
-                    <div>
-                      <p className="text-sm text-yellow-800 font-medium">What is Market Rent?</p>
-                      <p className="text-sm text-yellow-800">
-                        Market rent is the amount a landlord could reasonably expect to receive for a tenancy, 
-                        similar to rents for comparable properties in the area.
+                    
+                    <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 mb-4">
+                      <div className="flex gap-2 items-start">
+                        <div className="bg-blue-100 text-blue-800 p-1 rounded-full">
+                          <DoorClosed className="h-4 w-4" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-blue-800 font-medium">What are Units?</p>
+                          <p className="text-sm text-blue-800">
+                            Units are leasable spaces within your property, such as homes, rooms, or apartments.
+                            Adding at least one unit is required because leases are associated with units.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {unitForm.watch("units")?.map((_, index) => (
+                      <Card key={index} className="border border-gray-200">
+                        <CardContent className="pt-6">
+                          <div className="flex justify-between items-center mb-4">
+                            <h4 className="font-medium">Unit {index + 1}</h4>
+                            {unitForm.watch("units").length > 1 && (
+                              <Button 
+                                type="button" 
+                                variant="ghost" 
+                                size="sm"
+                                onClick={() => removeUnit(index)}
+                                className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                              >
+                                Remove
+                              </Button>
+                            )}
+                          </div>
+                          
+                          <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                              control={unitForm.control}
+                              name={`units.${index}.name`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Unit Name <span className="text-red-500">*</span></FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="e.g., Apt 101, Suite A" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <div className="grid grid-cols-2 gap-2">
+                              <FormField
+                                control={unitForm.control}
+                                name={`units.${index}.beds`}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Beds</FormLabel>
+                                    <FormControl>
+                                      <Input type="number" placeholder="0" {...field} />
+                                    </FormControl>
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <FormField
+                                control={unitForm.control}
+                                name={`units.${index}.baths`}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Baths</FormLabel>
+                                    <FormControl>
+                                      <Input type="number" placeholder="0" {...field} />
+                                    </FormControl>
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                            
+                            <FormField
+                              control={unitForm.control}
+                              name={`units.${index}.size`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Size (sq ft)</FormLabel>
+                                  <FormControl>
+                                    <Input type="number" placeholder="0" {...field} />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={unitForm.control}
+                              name={`units.${index}.marketRent`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Market Rent ($)</FormLabel>
+                                  <FormControl>
+                                    <Input type="number" placeholder="0" {...field} />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </>
+                )}
+                
+                {!isSingleFamilyHome && (
+                  <>
+                    <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                      <div className="flex gap-2 items-start">
+                        <div className="bg-yellow-100 text-yellow-800 p-1 rounded-full">
+                          <ReceiptText className="h-4 w-4" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-yellow-800 font-medium">What is Market Rent?</p>
+                          <p className="text-sm text-yellow-800">
+                            Market rent is the amount a landlord could reasonably expect to receive for a tenancy, 
+                            similar to rents for comparable properties in the area.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
+                      <p className="text-sm text-amber-800">
+                        <span className="font-semibold">Note:</span> Every unit added, even if vacant, counts as an active unit 
+                        and may affect your subscription pricing.
                       </p>
                     </div>
-                  </div>
-                </div>
-                
-                <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
-                  <p className="text-sm text-amber-800">
-                    <span className="font-semibold">Note:</span> Every unit added, even if vacant, counts as an active unit 
-                    and may affect your subscription pricing.
-                  </p>
-                </div>
+                  </>
+                )}
               </div>
             </form>
           </Form>
