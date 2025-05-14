@@ -103,6 +103,41 @@ const createApplicationSchema = (config: any) => {
   return z.object(schema);
 };
 
+// Define a type for all possible form values
+interface ApplicationFormValues {
+  fullName?: string;
+  email?: string;
+  phone?: string;
+  dateOfBirth?: string;
+  ssn?: string;
+  driverLicense?: string;
+  currentAddress?: string;
+  moveInDate?: string;
+  currentLandlord?: string;
+  landlordPhone?: string;
+  reasonForMoving?: string;
+  employer?: string;
+  position?: string;
+  income?: string;
+  employmentStartDate?: string;
+  supervisorName?: string;
+  supervisorPhone?: string;
+  hasVehicle?: boolean;
+  vehicleMake?: string;
+  vehicleModel?: string;
+  vehicleYear?: string;
+  vehicleLicense?: string;
+  hasPets?: boolean;
+  petType?: string;
+  petBreed?: string;
+  petWeight?: string;
+  emergencyContactName?: string;
+  emergencyContactPhone?: string;
+  emergencyContactRelation?: string;
+  termsAccepted: boolean;
+  [key: string]: string | boolean | undefined;
+}
+
 export default function ApplicationForm() {
   const { templateId } = useParams();
   const navigate = useNavigate();
@@ -129,13 +164,15 @@ export default function ApplicationForm() {
   
   const applicationSchema = template ? createApplicationSchema(template.settings) : z.object({});
   
-  const form = useForm({
+  const form = useForm<ApplicationFormValues>({
     resolver: zodResolver(applicationSchema),
-    defaultValues: {},
+    defaultValues: {
+      termsAccepted: false,
+    },
     mode: "onChange",
   });
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: ApplicationFormValues) => {
     setLoading(true);
     
     // Simulate API call
