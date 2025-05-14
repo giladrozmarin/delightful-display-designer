@@ -16,6 +16,7 @@ import LeaseDetails from "./pages/LeaseDetails";
 import Applications from "./pages/Applications";
 import ApplicationSettings from "./pages/ApplicationSettings";
 import ApplicationsOverview from "./pages/ApplicationsOverview";
+import ApplicationForm from "./pages/ApplicationForm"; // Added this import
 import Tenants from "./pages/Tenants";
 import TenantDetails from "./pages/TenantDetails";
 import Contractors from "./pages/Contractors";
@@ -47,6 +48,7 @@ const App = () => (
           <Route path="/leases/:id" element={<LeaseDetails />} />
           <Route path="/applications" element={<Applications />} />
           <Route path="/applications/overview" element={<ApplicationsOverview />} />
+          <Route path="/applications/form/:templateId" element={<ApplicationForm />} /> {/* Added this route */}
           <Route path="/settings/applications" element={<ApplicationSettings />} />
           <Route path="/newApplications" element={<NewApplication />} />
           <Route path="/tenants" element={<Tenants />} />
