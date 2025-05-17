@@ -5,4 +5,3 @@ export { ApplicationFormTenantPreview } from './ApplicationFormTenantPreview';
 export { ApplicationLinksSection } from './ApplicationLinksSection';
 export { HowItWorksSection } from './HowItWorksSection';
 export { LegalInformationSection } from './LegalInformationSection';
-

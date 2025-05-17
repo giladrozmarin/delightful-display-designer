@@ -12,3 +12,8 @@ export * from './DocumentsTabContent';
 export * from './TermsTabContent';
 export * from './NotificationsTabContent';
 export * from './ApplicationLinkTabContent';
+export * from './OccupantsTabContent';
+export * from './PetsTabContent';
+export * from './VehiclesTabContent';
+export * from './BackgroundTabContent';
+export * from './ReferencesTabContent';

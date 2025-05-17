@@ -1,19 +1,6 @@
 
 import React from 'react';
 import { TabsList as ShadcnTabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  Info,
-  CreditCard,
-  User,
-  Home,
-  Briefcase,
-  FileText,
-  MessageSquare,
-  Upload,
-  BookOpen,
-  Bell,
-  Link
-} from 'lucide-react';
 
 interface TabsListProps {
   activeTab: string;
@@ -22,95 +9,119 @@ interface TabsListProps {
 
 export function TabsList({ activeTab, onChange }: TabsListProps) {
   return (
-    <div className="w-full overflow-x-auto pb-2">
-      <ShadcnTabsList className="bg-gray-50 border shadow-sm w-full rounded-lg p-1 mb-2 flex flex-nowrap min-w-max">
+    <div className="w-full mb-6">
+      <ShadcnTabsList className="w-full overflow-x-auto grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-2">
         <TabsTrigger 
-          value="general" 
-          onClick={() => onChange('general')}
-          className="rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm whitespace-nowrap"
+          value="general"
+          className={activeTab === "general" ? "data-[state=active]:bg-primary" : ""}
+          onClick={() => onChange("general")}
         >
-          <Info className="h-4 w-4 mr-2" />
           General
         </TabsTrigger>
         <TabsTrigger 
-          value="payment" 
-          onClick={() => onChange('payment')}
-          className="rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm whitespace-nowrap"
+          value="payment"
+          className={activeTab === "payment" ? "data-[state=active]:bg-primary" : ""}
+          onClick={() => onChange("payment")}
         >
-          <CreditCard className="h-4 w-4 mr-2" />
-          Payment Options
+          Payment
         </TabsTrigger>
         <TabsTrigger 
-          value="applicant" 
-          onClick={() => onChange('applicant')}
-          className="rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm whitespace-nowrap"
+          value="applicant"
+          className={activeTab === "applicant" ? "data-[state=active]:bg-primary" : ""}
+          onClick={() => onChange("applicant")}
         >
-          <User className="h-4 w-4 mr-2" />
-          Applicant Info
+          Applicant
         </TabsTrigger>
         <TabsTrigger 
-          value="residence" 
-          onClick={() => onChange('residence')}
-          className="rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm whitespace-nowrap"
+          value="residence"
+          className={activeTab === "residence" ? "data-[state=active]:bg-primary" : ""}
+          onClick={() => onChange("residence")}
         >
-          <Home className="h-4 w-4 mr-2" />
-          Residential
+          Residence
         </TabsTrigger>
         <TabsTrigger 
-          value="employment" 
-          onClick={() => onChange('employment')}
-          className="rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm whitespace-nowrap"
+          value="employment"
+          className={activeTab === "employment" ? "data-[state=active]:bg-primary" : ""}
+          onClick={() => onChange("employment")}
         >
-          <Briefcase className="h-4 w-4 mr-2" />
           Employment
         </TabsTrigger>
         <TabsTrigger 
-          value="optional" 
-          onClick={() => onChange('optional')}
-          className="rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm whitespace-nowrap"
+          value="occupants"
+          className={activeTab === "occupants" ? "data-[state=active]:bg-primary" : ""}
+          onClick={() => onChange("occupants")}
         >
-          <FileText className="h-4 w-4 mr-2" />
-          Optional Sections
+          Occupants
         </TabsTrigger>
         <TabsTrigger 
-          value="custom" 
-          onClick={() => onChange('custom')}
-          className="rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm whitespace-nowrap"
+          value="pets"
+          className={activeTab === "pets" ? "data-[state=active]:bg-primary" : ""}
+          onClick={() => onChange("pets")}
         >
-          <MessageSquare className="h-4 w-4 mr-2" />
+          Pets
+        </TabsTrigger>
+        <TabsTrigger 
+          value="vehicles"
+          className={activeTab === "vehicles" ? "data-[state=active]:bg-primary" : ""}
+          onClick={() => onChange("vehicles")}
+        >
+          Vehicles
+        </TabsTrigger>
+        <TabsTrigger 
+          value="background"
+          className={activeTab === "background" ? "data-[state=active]:bg-primary" : ""}
+          onClick={() => onChange("background")}
+        >
+          Background
+        </TabsTrigger>
+        <TabsTrigger 
+          value="references"
+          className={activeTab === "references" ? "data-[state=active]:bg-primary" : ""}
+          onClick={() => onChange("references")}
+        >
+          References
+        </TabsTrigger>
+        <TabsTrigger 
+          value="optional"
+          className={activeTab === "optional" ? "data-[state=active]:bg-primary" : ""}
+          onClick={() => onChange("optional")}
+        >
+          Optional
+        </TabsTrigger>
+        <TabsTrigger 
+          value="custom"
+          className={activeTab === "custom" ? "data-[state=active]:bg-primary" : ""}
+          onClick={() => onChange("custom")}
+        >
           Custom Questions
         </TabsTrigger>
         <TabsTrigger 
-          value="documents" 
-          onClick={() => onChange('documents')}
-          className="rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm whitespace-nowrap"
+          value="documents"
+          className={activeTab === "documents" ? "data-[state=active]:bg-primary" : ""}
+          onClick={() => onChange("documents")}
         >
-          <Upload className="h-4 w-4 mr-2" />
           Documents
         </TabsTrigger>
         <TabsTrigger 
-          value="terms" 
-          onClick={() => onChange('terms')}
-          className="rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm whitespace-nowrap"
+          value="terms"
+          className={activeTab === "terms" ? "data-[state=active]:bg-primary" : ""}
+          onClick={() => onChange("terms")}
         >
-          <BookOpen className="h-4 w-4 mr-2" />
-          Terms & Conditions
+          Terms
         </TabsTrigger>
         <TabsTrigger 
-          value="notifications" 
-          onClick={() => onChange('notifications')}
-          className="rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm whitespace-nowrap"
+          value="notifications"
+          className={activeTab === "notifications" ? "data-[state=active]:bg-primary" : ""}
+          onClick={() => onChange("notifications")}
         >
-          <Bell className="h-4 w-4 mr-2" />
           Notifications
         </TabsTrigger>
         <TabsTrigger 
-          value="link" 
-          onClick={() => onChange('link')}
-          className="rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm whitespace-nowrap"
+          value="link"
+          className={activeTab === "link" ? "data-[state=active]:bg-primary" : ""}
+          onClick={() => onChange("link")}
         >
-          <Link className="h-4 w-4 mr-2" />
-          Application Link
+          Link
         </TabsTrigger>
       </ShadcnTabsList>
     </div>

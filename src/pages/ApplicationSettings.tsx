@@ -24,6 +24,11 @@ import {
   TermsTabContent,
   NotificationsTabContent,
   ApplicationLinkTabContent,
+  OccupantsTabContent,
+  PetsTabContent,
+  VehiclesTabContent,
+  BackgroundTabContent,
+  ReferencesTabContent,
   CustomQuestion,
   ApplicationSettingsFormValues
 } from '@/components/application-settings';
@@ -53,13 +58,17 @@ export default function ApplicationSettings() {
         ssn: true,
         dateOfBirth: true,
         driverLicense: false,
+        governmentId: false,
       },
       residentialFields: {
         currentAddress: true,
         moveInDate: true,
         currentLandlord: false,
+        landlordContact: false,
         reasonForMoving: false,
         previousAddresses: false,
+        rentalHistory: false,
+        yearsOfHistory: 3,
       },
       employmentFields: {
         employer: true,
@@ -67,6 +76,8 @@ export default function ApplicationSettings() {
         income: true,
         startDate: true,
         supervisorContact: false,
+        additionalIncome: false,
+        incomeVerification: false,
       },
       includeSections: {
         vehicleInformation: false,
@@ -74,6 +85,36 @@ export default function ApplicationSettings() {
         emergencyContacts: true,
         pets: true,
         additionalIncome: false,
+        references: false,
+        backgroundQuestions: true,
+        cosignerInfo: false,
+        occupants: true,
+      },
+      occupantsConfig: {
+        collectNames: true,
+        collectAges: true,
+        collectRelationship: false,
+      },
+      petConfig: {
+        collectType: true,
+        collectBreed: true,
+        collectWeight: true,
+        collectAge: false,
+        collectVaccination: false,
+      },
+      vehicleConfig: {
+        collectMake: true,
+        collectModel: true,
+        collectYear: true,
+        collectLicense: true,
+        collectInsurance: false,
+      },
+      backgroundConfig: {
+        askSmokingStatus: true,
+        askEvictionHistory: true,
+        askBankruptcyHistory: false,
+        askCriminalHistory: true,
+        askRentRefusal: false,
       },
       requiredDocuments: ["Government ID", "Proof of Income"],
       allowLaterUploads: true,
@@ -127,7 +168,7 @@ export default function ApplicationSettings() {
   const handleSaveTemplate = (values: ApplicationSettingsFormValues) => {
     const newTemplate: ApplicationTemplate = {
       id: applicationTemplates.length + 1,
-      name: values.instructions || "New Template",
+      name: values.instructions ? values.instructions.slice(0, 30) + "..." : "New Template",
       description: "Custom application template",
       settings: values,
       createdAt: new Date().toISOString(),
@@ -197,6 +238,26 @@ export default function ApplicationSettings() {
                     
                     <TabsContent value="employment">
                       <EmploymentTabContent form={form} />
+                    </TabsContent>
+                    
+                    <TabsContent value="occupants">
+                      <OccupantsTabContent form={form} />
+                    </TabsContent>
+                    
+                    <TabsContent value="pets">
+                      <PetsTabContent form={form} />
+                    </TabsContent>
+                    
+                    <TabsContent value="vehicles">
+                      <VehiclesTabContent form={form} />
+                    </TabsContent>
+                    
+                    <TabsContent value="background">
+                      <BackgroundTabContent form={form} />
+                    </TabsContent>
+                    
+                    <TabsContent value="references">
+                      <ReferencesTabContent form={form} />
                     </TabsContent>
                     
                     <TabsContent value="optional">
