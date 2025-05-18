@@ -7,7 +7,7 @@ import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { InfoCircle } from 'lucide-react';
+import { Info } from 'lucide-react';
 
 interface BackgroundTabContentProps {
   form: UseFormReturn<ApplicationSettingsFormValues>;
@@ -37,7 +37,7 @@ export function BackgroundTabContent({ form }: BackgroundTabContentProps) {
       </div>
 
       <Alert>
-        <InfoCircle className="h-4 w-4" />
+        <Info className="h-4 w-4" />
         <AlertDescription>
           Please ensure all background questions comply with Fair Housing laws and your local regulations.
         </AlertDescription>
